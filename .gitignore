@@ -30,3 +30,6 @@
 
 # Ignore .vscode/
 .vscode
+
+# Ignore LFS folder
+/Assets/LFS
