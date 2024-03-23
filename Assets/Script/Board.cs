@@ -56,6 +56,9 @@ public class Board : MonoBehaviour {
 
 	// private Client client;
 
+	// Added variables
+	private List<GameObject> indicators = new List<GameObject>();
+	public GameObject indicator;
 	private void Start()
 	{
 		Instance = this;
@@ -70,6 +73,9 @@ public class Board : MonoBehaviour {
 		blueCurvyArrow = Instantiate(blueCurvyArrow);
 		redCurvyArrow.transform.position = new Vector3(-139.9f, 81, 10f);
 		blueCurvyArrow.transform.position = new Vector3(-139.9f, -81f, 300f);
+
+		//ADDED
+		// indicators = GameObject[];
 	}
 
 	private void Update()
@@ -111,12 +117,19 @@ public class Board : MonoBehaviour {
 		}
 		
 		if(Input.GetMouseButtonDown(0)){
+			foreach (GameObject ind in indicators){
+				Destroy(ind);
+			}
 			// Debug.Log("RED" + isRedTurn + "mouse down 0");
 			// if(isRed == isRedTurn){
 				SelectPiece(x, y);//assgin startDrag pos and selected in here
 				if(selectedPiece != null && selectedPiece.GetRed()==isRedTurn){
 					dragging = true;
 					originalPosition = selectedPiece.transform.position;
+					// int startX = ;
+					// int startY = ;
+					// ChessPiece selected_piece = pieces[startX, startY];
+					getPosibleMoves((int) startDrag.x, (int) startDrag.y, selectedPiece.Type);
 				}
 			// }
 		}
@@ -141,6 +154,10 @@ public class Board : MonoBehaviour {
 					}else{
 						redCurvyArrow.transform.position = new Vector3(-139.9f, 81, 300f);
 						blueCurvyArrow.transform.position = new Vector3(-139.9f, -81f, 10f);
+					}
+					
+					foreach (GameObject ind in indicators){
+						Destroy(ind);
 					}
 				}
 			}
@@ -199,8 +216,6 @@ public class Board : MonoBehaviour {
 		//Check if in board
 		if(endX >= 0 && endX < 10 && endY >= 0 && endY < 9 && selectedPiece != null){
 			if(isValidMove(startX, startY, endX, endY, selectedPiece.Type)){
-
-			
 				if(!GeneralChecked(isRedTurn)){ //Normal nothing!
 					// Debug.Log("Normal round");
 					MovePiece(selectedPiece, endX, endY);
@@ -287,7 +302,11 @@ public class Board : MonoBehaviour {
 					}
 				}
 			}else{
+				//Released at the orginal place
 				invalidMove = true;
+
+				// Show possible moving locations
+				// indicators = 
 			}
 		}else{
 			invalidMove = true;
@@ -485,6 +504,331 @@ public class Board : MonoBehaviour {
 					return true;
 				}
 			}
+		}
+		return false;
+	}
+
+private void addCrossMoves(int startX, int startY, ArrayList possibleMoves){
+	ChessPiece moving_piece = pieces[startX, startY];
+	for (int i = startX + 1; i < 10; i++){
+		if(pieces[i, startY] != null){
+			if(moving_piece.GetRed() != pieces[i, startY].GetRed()){
+				possibleMoves.Add(new Vector2(i, startY));
+			}
+			break;
+		}
+		possibleMoves.Add(new Vector2(i, startY));
+	}
+	for (int i = startX - 1; i > -1; i--){
+		if(pieces[i, startY] != null){
+			if(moving_piece.GetRed() != pieces[i, startY].GetRed()){
+				possibleMoves.Add(new Vector2(i, startY));
+			}
+			break;
+		}
+		possibleMoves.Add(new Vector2(i, startY));
+	}
+	for (int i = startY + 1; i < 9; i++){
+		if(pieces[startX, i] != null){
+			if(moving_piece.GetRed() != pieces[startX, i].GetRed()){
+				possibleMoves.Add(new Vector2(startX, i));
+			}
+			break;
+		}
+		possibleMoves.Add(new Vector2(startX, i));
+	}
+	for (int i = startY - 1; i > -1; i--){
+		if(pieces[startX, i] != null){
+			if(moving_piece.GetRed() != pieces[startX, i].GetRed()){
+				possibleMoves.Add(new Vector2(startX, i));
+			}
+			break;
+		}
+		possibleMoves.Add(new Vector2(startX, i));
+	}
+}
+private bool getPosibleMoves(int startX, int startY, string type){
+		ChessPiece moving_piece = pieces[startX, startY];
+		ArrayList possibleMoves = new ArrayList();
+		bool isRed = pieces[startX, startY].GetRed();
+		if(type=="chariot"){
+			// int start = -1;
+			// int end = -1;
+			addCrossMoves(startX, startY, possibleMoves);
+			/**
+			// if(startX!=endX && startY!=endY)return false;
+			// if(startX==endX && startY==endY)return false;
+			// int start;
+			// int end;
+			// if(startY!=endY){
+			// 	if(endY>startY){
+			// 		start = startY;
+			// 		end = endY;
+			// 	}else{
+			// 		start = endY;
+			// 		end = startY;
+			// 	}
+			// 	for(int i=start+1; i<end; i++){
+			// 		if(pieces[startX, i] != null)return false;
+			// 	}
+			// 	return true;
+			// }else if(startX!=endX){
+			// 	if(endX>startX){
+			// 		start = startX;
+			// 		end = endX;
+			// 	}else{
+			// 		start = endX;
+			// 		end = startX;
+			// 	}
+			// 	for(int i=start+1; i<end; i++){
+			// 		if(pieces[i, startY] != null)return false;
+			// 	}
+			// 	return true;
+			// }	
+			**/		
+		}else if(type=="horse"){
+			if(isInBounds(startX+1, startY)){
+				if(pieces[startX+1, startY]==null){
+					if(pieces[startX+2, startY-1] == null || pieces[startX+2, startY-1].GetRed() != moving_piece.GetRed()){
+						possibleMoves.Add(new Vector2(startX+2, startY-1));
+					}
+					if(pieces[startX+2, startY+1] == null || pieces[startX+2, startY+1].GetRed() != moving_piece.GetRed()){
+						possibleMoves.Add(new Vector2(startX+2, startY+1));
+					}
+				}
+			}
+			if(isInBounds(startX-1, startY)){
+				if(pieces[startX-1, startY]==null){
+					if(pieces[startX-2, startY-1] == null || pieces[startX-2, startY-1].GetRed() != moving_piece.GetRed()){
+						possibleMoves.Add(new Vector2(startX-2, startY-1));
+					}
+					if(pieces[startX-2, startY+1] == null || pieces[startX-2, startY+1].GetRed() != moving_piece.GetRed()){
+						possibleMoves.Add(new Vector2(startX-2, startY+1));
+					}
+				}
+			}
+			if(isInBounds(startX, startY-1)){
+				if(pieces[startX, startY-1]==null){
+					if(pieces[startX+1, startY-2] == null || pieces[startX+1, startY-2].GetRed() != moving_piece.GetRed()){
+						possibleMoves.Add(new Vector2(startX+1, startY-2));
+					}
+					if(pieces[startX-1, startY-2] == null || pieces[startX-1, startY-2].GetRed() != moving_piece.GetRed()){
+						possibleMoves.Add(new Vector2(startX-1, startY-2));
+					}
+				}
+			}
+			if(isInBounds(startX, startY+1)){
+				if(pieces[startX, startY+1]==null){
+					if(pieces[startX+1, startY+2] == null || pieces[startX+1, startY+2].GetRed() != moving_piece.GetRed()){
+					possibleMoves.Add(new Vector2(startX+1, startY+2));
+					}
+					if(pieces[startX-1, startY+2] == null || pieces[startX-1, startY+2].GetRed() != moving_piece.GetRed()){
+					possibleMoves.Add(new Vector2(startX-1, startY+2));
+					}
+				}
+			}
+		}else if(type=="elephant"){
+			if(isInBounds(startX+1, startY+1)){
+				if(pieces[startX+1, startY+1] == null){
+					if(!isRed){
+						if(startX+2 <= 4){
+							possibleMoves.Add(new Vector2(startX+2, startY+2));
+						}
+					}else{
+						possibleMoves.Add(new Vector2(startX+2, startY+2));
+					}
+				}
+			}
+			if(isInBounds(startX+1, startY-1)){
+				if(pieces[startX+1, startY-1] == null){
+					if(!isRed){
+						if(startX+2 <= 4){
+							possibleMoves.Add(new Vector2(startX+2, startY-2));
+						}
+					}else{
+						possibleMoves.Add(new Vector2(startX+2, startY-2));
+					}
+				}
+			}
+			if(isInBounds(startX-1, startY+1)){
+				if(pieces[startX-1, startY+1]==null){
+					if(isRed){
+						if(startX-2 >= 5){
+							possibleMoves.Add(new Vector2(startX-2, startY+2));
+						}
+					}else{
+						possibleMoves.Add(new Vector2(startX-2, startY+2));
+					}
+				}
+			}
+			if(isInBounds(startX-1, startY-1)){
+				if(pieces[startX-1, startY-1]==null){
+					if(isRed){
+						if(startX-2 >= 5){
+							possibleMoves.Add(new Vector2(startX-2, startY-2));
+						}
+					}else{
+						possibleMoves.Add(new Vector2(startX-2, startY-2));
+					}
+				}
+			}
+		}else if(type=="advisor"){
+			ArrayList advisorBox = new ArrayList();
+			if(isRed){
+				advisorBox.Add(new Vector2(7, 3));
+				advisorBox.Add(new Vector2(7, 5));
+				advisorBox.Add(new Vector2(8, 4));
+				advisorBox.Add(new Vector2(9, 3));
+				advisorBox.Add(new Vector2(9, 5));
+			}else{
+				advisorBox.Add(new Vector2(0, 3));
+				advisorBox.Add(new Vector2(0, 5));
+				advisorBox.Add(new Vector2(1, 4));
+				advisorBox.Add(new Vector2(2, 3));
+				advisorBox.Add(new Vector2(2, 5));
+			}
+			if(advisorBox.Contains(new Vector2(startX+1, startY+1))){
+				possibleMoves.Add(new Vector2(startX+1, startY+1));
+			}
+			
+			if(advisorBox.Contains(new Vector2(startX+1, startY-1))){
+				possibleMoves.Add(new Vector2(startX+1, startY-1));
+			}
+			
+			if(advisorBox.Contains(new Vector2(startX-1, startY+1))){
+				possibleMoves.Add(new Vector2(startX-1, startY+1));
+			}
+			
+			if(advisorBox.Contains(new Vector2(startX-1, startY-1))){
+				possibleMoves.Add(new Vector2(startX-1, startY-1));
+			}
+			/*
+			// foreach (Vector2 pos in possibleMoves){
+			// 	if(pos.x == endX && pos.y == endY && advisorBox.Contains(pos)){
+			// 		if(isInBounds(endX, endY)){
+			// 			return true;
+			// 		}
+			// 	}
+			// }
+			// return false;
+			*/
+		}else if(type=="general"){
+			ArrayList generalBox = new ArrayList();
+			if(isRed){
+				for(int i=7; i<10; i++){
+					for(int j=3; j<6; j++){
+						generalBox.Add(new Vector2(i, j));
+					}
+				}
+			}else{
+				for(int i=0; i<3; i++){
+					for(int j=3; j<6; j++){
+						generalBox.Add(new Vector2(i, j));
+					}
+				}
+			}
+			if(generalBox.Contains(new Vector2(startX+1, startY))){
+				possibleMoves.Add(new Vector2(startX+1, startY));
+			}
+			if(generalBox.Contains(new Vector2(startX-1, startY))){
+			possibleMoves.Add(new Vector2(startX-1, startY));
+			}
+			if(generalBox.Contains(new Vector2(startX, startY+1))){
+			possibleMoves.Add(new Vector2(startX, startY+1));
+			}
+			if(generalBox.Contains(new Vector2(startX, startY-1))){
+			possibleMoves.Add(new Vector2(startX, startY-1));
+			}
+			/*
+			// foreach (Vector2 pos in possibleMoves){
+			// 	if(pos.x == endX && pos.y == endY && generalBox.Contains(pos)){
+			// 		if(isInBounds(endX, endY)){
+			// 			return true;
+			// 		}
+			// 	}
+			// }
+			// return false;
+			*/
+		}else if(type=="cannon"){
+			for (int i = startX + 1; i < 10; i++){
+				if(pieces[i, startY] != null){
+					break;
+				}
+				possibleMoves.Add(new Vector2(i, startY));
+			}
+			for (int i = startX - 1; i > -1; i--){
+				if(pieces[i, startY] != null){
+					break;
+				}
+				possibleMoves.Add(new Vector2(i, startY));
+			}
+			for (int i = startY + 1; i < 9; i++){
+				if(pieces[startX, i] != null){
+					break;
+				}
+				possibleMoves.Add(new Vector2(startX, i));
+			}
+			for (int i = startY - 1; i > -1; i--){
+				if(pieces[startX, i] != null){
+					break;
+				}
+				possibleMoves.Add(new Vector2(startX, i));
+			}
+			int start;
+			int end;
+			//X attack
+			for (int i = 0; i < 10; i++){
+				if(pieces[i, startY] != null){
+					int countBetween = 0;
+					if(pieces[i, startY].GetRed() == moving_piece.GetRed()){}
+					else{
+						if(startX<i){start=startX; end=i;}else{start=i; end=startX;}
+						for(int j=start+1; j<end; j++){
+							if(pieces[j, startY] != null)countBetween++;
+						}
+						if(countBetween == 1){
+							possibleMoves.Add(new Vector2(i, startY));
+						}
+					}
+				}
+			}
+			//Y attack
+			for (int i = 0; i < 9; i++){
+				if(pieces[startX, i] != null){
+					int countBetween = 0;
+					if(pieces[startX, i].GetRed() == moving_piece.GetRed()){}
+					else{
+						if(startY<i){start=startY; end=i;}else{start=i; end=startY;}
+						for(int j=start+1; j<end; j++){
+							if(pieces[startX, j] != null)countBetween++;
+						}
+						if(countBetween == 1){
+							possibleMoves.Add(new Vector2(startX, i));
+						}
+					}
+				}
+			}
+		}else if(type=="soldier"){
+			bool crossedRiver = false;
+			if(isRed){
+				possibleMoves.Add(new Vector2(startX-1, startY));
+				if(startX<=4){crossedRiver=true;}
+			}else{
+				possibleMoves.Add(new Vector2(startX+1, startY));
+				if(startX>=5){crossedRiver=true;}
+			}
+			if(crossedRiver){
+				possibleMoves.Add(new Vector2(startX, startY-1));
+				possibleMoves.Add(new Vector2(startX, startY+1));
+			}
+		}
+
+		// ALSO show possible moves TODO
+		foreach (Vector2 pos in possibleMoves){
+			GameObject ind = Instantiate(indicator);
+			ind.transform.position = moving_piece.transform.position + new Vector3((pos.y - startY) * 20f, (pos.x - startX) * 20f, 0.0f);
+			indicators.Add(ind);
+			// piece.transform.position = piece.transform.position + new Vector3(yDifference * 20f, xDifference * 20f, 0.0f);
 		}
 		return false;
 	}
@@ -701,6 +1045,7 @@ public class Board : MonoBehaviour {
 				possibleMoves.Add(new Vector2(startX, startY+1));
 			}
 		}
+
 		foreach (Vector2 pos in possibleMoves){
 			if(pos.x == endX && pos.y == endY){
 				if(isInBounds(endX, endY)){
