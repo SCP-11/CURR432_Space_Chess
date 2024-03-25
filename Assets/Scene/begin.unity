@@ -899,6 +899,7 @@ MonoBehaviour:
   invalidMoveText: {fileID: 1768332419788560, guid: 9f21a6d96511ead439ba963d44f561cd, type: 3}
   invalidAlpha: 0
   generalAlpha: 0
+  indicator: {fileID: 8113535120150506050, guid: 8043522d5ff6ed5488eace277d07163f, type: 3}
 --- !u!4 &1973509668 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400002, guid: 51767d934b9caaf43b35d4ab65d2615f, type: 3}

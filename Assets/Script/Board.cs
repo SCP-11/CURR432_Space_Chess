@@ -2,6 +2,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using Unity.VisualScripting;
 
 public class Board : MonoBehaviour {
 
@@ -120,25 +122,40 @@ public class Board : MonoBehaviour {
 			foreach (GameObject ind in indicators){
 				Destroy(ind);
 			}
+
+			/*	//////////////	OLD	//////////////
 			// Debug.Log("RED" + isRedTurn + "mouse down 0");
 			// if(isRed == isRedTurn){
 				SelectPiece(x, y);//assgin startDrag pos and selected in here
-				if(selectedPiece != null && selectedPiece.GetRed()==isRedTurn){
-					dragging = true;
-					originalPosition = selectedPiece.transform.position;
-					// int startX = ;
-					// int startY = ;
-					// ChessPiece selected_piece = pieces[startX, startY];
-					getPosibleMoves((int) startDrag.x, (int) startDrag.y, selectedPiece.Type);
-				}
+				// if(selectedPiece != null && selectedPiece.GetRed()==isRedTurn){
+				// 	// dragging = true;
+				// 	originalPosition = selectedPiece.transform.position;
+				// 	// int startX = ;
+				// 	// int startY = ;
+				// 	// ChessPiece selected_piece = pieces[startX, startY];
+				// 	showPossibleMoves((int) startDrag.x, (int) startDrag.y, selectedPiece.Type);
+				// }
 			// }
+			*/
+
+			//////////////////////////////////////////NEW//////////////////////
+			///Click a pawn will select it.
+			///Clicking nothing will deselect
+			///Clicking another pawn will relect
+			///Clicking a possible attack or movement will do so.
+			///
+
+			SelectPiece(x, y);
 		}
 		
+		/* When mouse released
+		// 
+		//
 		if(Input.GetMouseButtonUp(0)){
 			if(selectedPiece != null && selectedPiece.GetRed()==isRedTurn){
 				TryMove((int) startDrag.x, (int) startDrag.y, x, y);
 				dragging = false;
-				selectedPiece = null;
+				// selectedPiece = null;
 				if(moveCompleted){
 					// string msg = "CMOV|";
 					// msg += ((int)startDrag.x).ToString() + "|";
@@ -162,7 +179,7 @@ public class Board : MonoBehaviour {
 				}
 			}
 		}
-		
+		*/
 	}
 
 	private void UpdateMouseOver()
@@ -179,6 +196,7 @@ public class Board : MonoBehaviour {
 		boardPosition = GetBoardPosition(mousePosition.x, mousePosition.y);
 	}
 
+	/* OLD SelectPiece
 	private void SelectPiece(int x, int y)
 	{
 		if(x < 0 || x > 9 || y < 0 || y > 8){
@@ -192,6 +210,149 @@ public class Board : MonoBehaviour {
 			startDrag = boardPosition;
 		}
 	}
+	*/
+	private void SelectPiece(int x, int y)
+	{
+		if(x < 0 || x > 9 || y < 0 || y > 8){
+			return;
+		}
+
+		ChessPiece p = pieces[x, y];
+		
+		if(p!= null){
+			if(p.GetRed()==isRedTurn){
+				selectedPiece = p;	//selectedPiece can only be allie pawn
+				startDrag = boardPosition;
+
+				/////////////// 	ADDED	/////////////
+				// dragging = true;
+				originalPosition = selectedPiece.transform.position;
+				showPossibleMoves((int) startDrag.x, (int) startDrag.y, selectedPiece.Type);
+			}else{
+				if(selectedPiece != null){	//	ATTACK
+					TryMove((int) startDrag.x, (int) startDrag.y, x, y);
+					if(moveCompleted){
+						if(isRedTurn){
+							redCurvyArrow.transform.position = new Vector3(-139.9f, 81, 10f);
+							blueCurvyArrow.transform.position = new Vector3(-139.9f, -81f, 300f);
+						}else{
+							redCurvyArrow.transform.position = new Vector3(-139.9f, 81, 300f);
+							blueCurvyArrow.transform.position = new Vector3(-139.9f, -81f, 10f);
+						}
+						foreach (GameObject ind in indicators){
+							Destroy(ind);
+						}
+					}
+					selectedPiece = null;
+				}
+			}
+		}else{
+			if(selectedPiece != null){
+				////////////	TRY MOVE	///////////////
+				TryMove((int) startDrag.x, (int) startDrag.y, x, y);
+				dragging = false;
+				if(moveCompleted){
+					if(isRedTurn){
+						redCurvyArrow.transform.position = new Vector3(-139.9f, 81, 10f);
+						blueCurvyArrow.transform.position = new Vector3(-139.9f, -81f, 300f);
+					}else{
+						redCurvyArrow.transform.position = new Vector3(-139.9f, 81, 300f);
+						blueCurvyArrow.transform.position = new Vector3(-139.9f, -81f, 10f);
+					}
+					foreach (GameObject ind in indicators){
+						Destroy(ind);
+					}
+				}
+				selectedPiece = null;
+			}
+		}
+
+		/*
+		if(selectedPiece == null){
+			if(p != null){
+				if(p.GetRed()==isRedTurn){
+					selectedPiece = p;	//selectedPiece can only be allie pawn
+					startDrag = boardPosition;
+
+					/////////////// 	ADDED	/////////////
+					// dragging = true;
+					originalPosition = selectedPiece.transform.position;
+					showPossibleMoves((int) boardPosition.x, (int) boardPosition.y, selectedPiece.Type);
+				}
+			}else{
+				selectedPiece = null;
+			}
+		}else{
+			if(p != null){
+				if(p.GetRed()==isRedTurn){
+					selectedPiece = p;	//selectedPiece can only be allie pawn
+					startDrag = boardPosition;
+
+					/////////////// 	ADDED	/////////////
+					// dragging = true;
+					originalPosition = selectedPiece.transform.position;
+					showPossibleMoves((int) boardPosition.x, (int) boardPosition.y, selectedPiece.Type);
+
+				}else{	//If enemy pawn and allie pawn is selected, check ATTACK
+
+				}
+			}else{
+				////////////	TRY MOVE	///////////////
+				TryMove((int) startDrag.x, (int) startDrag.y, x, y);
+				dragging = false;
+				if(moveCompleted){
+					if(isRedTurn){
+						redCurvyArrow.transform.position = new Vector3(-139.9f, 81, 10f);
+						blueCurvyArrow.transform.position = new Vector3(-139.9f, -81f, 300f);
+					}else{
+						redCurvyArrow.transform.position = new Vector3(-139.9f, 81, 300f);
+						blueCurvyArrow.transform.position = new Vector3(-139.9f, -81f, 10f);
+					}
+					foreach (GameObject ind in indicators){
+						Destroy(ind);
+					}
+				}
+			}
+		}
+		*/
+
+		/*
+		if(p != null){
+			if(p.GetRed()==isRedTurn){
+				selectedPiece = p;	//selectedPiece can only be allie pawn
+				startDrag = boardPosition;
+
+				/////////////// 	ADDED	/////////////
+				// dragging = true;
+				originalPosition = selectedPiece.transform.position;
+				showPossibleMoves((int) startDrag.x, (int) startDrag.y, selectedPiece.Type);
+
+			}else if(selectedPiece != null){	//If enemy pawn and allie pawn is selected, check ATTACK
+
+			}
+		}else{
+			if(selectedPiece!=null){	//IF ally pawn selected and  selecting a empty position, Check MOVE
+				////////////	TRY MOVE	///////////////
+				TryMove((int) startDrag.x, (int) startDrag.y, x, y);
+				dragging = false;
+				if(moveCompleted){
+					if(isRedTurn){
+						redCurvyArrow.transform.position = new Vector3(-139.9f, 81, 10f);
+						blueCurvyArrow.transform.position = new Vector3(-139.9f, -81f, 300f);
+					}else{
+						redCurvyArrow.transform.position = new Vector3(-139.9f, 81, 300f);
+						blueCurvyArrow.transform.position = new Vector3(-139.9f, -81f, 10f);
+					}
+					foreach (GameObject ind in indicators){
+						Destroy(ind);
+					}
+				}
+			}
+		}
+		*/
+	}
+
+
 
 	private void DragPiece(ChessPiece sP)
 	{
@@ -215,9 +376,20 @@ public class Board : MonoBehaviour {
 		Debug.Log($"{(selectedPiece.GetRed()? "red": "blue")}, endX {endX}, endY {endY}");
 		//Check if in board
 		if(endX >= 0 && endX < 10 && endY >= 0 && endY < 9 && selectedPiece != null){
-			if(isValidMove(startX, startY, endX, endY, selectedPiece.Type)){
+			ArrayList possibleAttacks = getPossibleAttacks(startX, startY, selectedPiece.Type);
+			if(possibleAttacks.Contains(new Vector2(endX, endY))){
+				if(pieces[endX, endY]!=null){ //eat the pawn
+					RemovePiece(endX, endY);
+					isRedTurn = ! isRedTurn;
+					return;
+				}
+			}else if(isValidMove(startX, startY, endX, endY, selectedPiece.Type)){
 				if(!GeneralChecked(isRedTurn)){ //Normal nothing!
 					// Debug.Log("Normal round");
+					
+					if(pieces[endX, endY]!=null){ //eat the pawn
+						RemovePiece(endX, endY);
+					}
 					MovePiece(selectedPiece, endX, endY);
 					moveCompleted = true;
 					isRedTurn = ! isRedTurn;
@@ -237,7 +409,9 @@ public class Board : MonoBehaviour {
 								if(pieces[endX, endY] != null){
 									removePos = new Vector2(endX, endY);
 									removePosIsRed = pieces[endX, endY].GetRed();
-									RemovePiece(pieces[endX, endY].GetRed(), endX, endY);
+									if(pieces[endX, endY]!=null){ //eat the pawn
+										RemovePiece(endX, endY);
+									}
 								}
 								bluePiecesPos[i] = new Vector2(endX, endY);
 								pieces[endX, endY] = selectedPiece;
@@ -253,7 +427,9 @@ public class Board : MonoBehaviour {
 								if(pieces[endX, endY] != null){
 									removePos = new Vector2(endX, endY);
 									removePosIsRed = pieces[endX, endY].GetRed();
-									RemovePiece(pieces[endX, endY].GetRed(), endX, endY);
+									if(pieces[endX, endY]!=null){ //eat the pawn
+										RemovePiece(endX, endY);
+									}
 								}
 								redPiecesPos[i] = new Vector2(endX, endY);
 								pieces[endX, endY] = selectedPiece;
@@ -319,6 +495,9 @@ public class Board : MonoBehaviour {
 
 	}
 
+	public void TryAttack(int startX, int startY, int endX, int endY){
+
+	}
 	private void MovePiece(ChessPiece piece, int x, int y){
 		if(piece==null){
 			return;
@@ -330,12 +509,9 @@ public class Board : MonoBehaviour {
 		Debug.Log($"Start in MovePiece is [{startX} {startY}]. Diff is [{xDifference} {yDifference}]. Current Pos is [{piece.transform.position}]");
 		piece.transform.position = piece.transform.position + new Vector3(yDifference * 20f, xDifference * 20f, 0.0f);
 		Debug.Log($"piece position = {piece.transform.position}");
-		if(pieces[x, y]!=null){ //eat the pawn
-			Debug.Log("EAT");
-			RemovePiece(pieces[x, y].GetRed(), x, y);
-			pieces[x, y].SetBoardPosition(-1, -1);
-			pieces[x, y].transform.position = pieces[x, y].transform.position + new Vector3(0f, 0f, 300f);
-		}
+
+
+		//////////////////////////////////////////////////Move
 		pieces[startX, startY] = null;
 		Debug.Log("Moving RED"+piece.GetRed());
 		if(piece.GetRed()){
@@ -362,7 +538,16 @@ public class Board : MonoBehaviour {
 		pieces[x, y] = piece;
 	}
 
-	private void RemovePiece(bool isRed, int x, int y){
+	private void RemovePiece(int x, int y){
+		bool isRed = pieces[x, y].GetRed();
+		/////////////////////////////////////////////////Attack
+		// if(pieces[x, y]!=null){ //eat the pawn
+		Debug.Log("EAT");
+		// RemovePiece(pieces[x, y].GetRed(), x, y);
+		pieces[x, y].SetBoardPosition(-1, -1);
+		pieces[x, y].transform.position = pieces[x, y].transform.position + new Vector3(0f, 0f, 300f);
+		// }
+
 		int removePos=-1;
 		if(isRed){
 			for(int i=0; i < redPiecesPos.Count; i++){
@@ -379,6 +564,8 @@ public class Board : MonoBehaviour {
 			}
 			bluePiecesPos.RemoveAt(removePos);
 		}
+
+		pieces[x,y] = null;
 	}
 
 	private Vector2 GetBoardPosition(float x, float y){
@@ -508,46 +695,57 @@ public class Board : MonoBehaviour {
 		return false;
 	}
 
-private void addCrossMoves(int startX, int startY, ArrayList possibleMoves){
-	ChessPiece moving_piece = pieces[startX, startY];
-	for (int i = startX + 1; i < 10; i++){
-		if(pieces[i, startY] != null){
-			if(moving_piece.GetRed() != pieces[i, startY].GetRed()){
-				possibleMoves.Add(new Vector2(i, startY));
+	private void addCrossMoves(int startX, int startY, ArrayList possibleMoves){
+		ChessPiece moving_piece = pieces[startX, startY];
+		for (int i = startX + 1; i < 10; i++){
+			if(pieces[i, startY] != null){
+				if(moving_piece.GetRed() != pieces[i, startY].GetRed()){
+					possibleMoves.Add(new Vector2(i, startY));
+				}
+				break;
 			}
-			break;
+			possibleMoves.Add(new Vector2(i, startY));
 		}
-		possibleMoves.Add(new Vector2(i, startY));
-	}
-	for (int i = startX - 1; i > -1; i--){
-		if(pieces[i, startY] != null){
-			if(moving_piece.GetRed() != pieces[i, startY].GetRed()){
-				possibleMoves.Add(new Vector2(i, startY));
+		for (int i = startX - 1; i > -1; i--){
+			if(pieces[i, startY] != null){
+				if(moving_piece.GetRed() != pieces[i, startY].GetRed()){
+					possibleMoves.Add(new Vector2(i, startY));
+				}
+				break;
 			}
-			break;
+			possibleMoves.Add(new Vector2(i, startY));
 		}
-		possibleMoves.Add(new Vector2(i, startY));
-	}
-	for (int i = startY + 1; i < 9; i++){
-		if(pieces[startX, i] != null){
-			if(moving_piece.GetRed() != pieces[startX, i].GetRed()){
-				possibleMoves.Add(new Vector2(startX, i));
+		for (int i = startY + 1; i < 9; i++){
+			if(pieces[startX, i] != null){
+				if(moving_piece.GetRed() != pieces[startX, i].GetRed()){
+					possibleMoves.Add(new Vector2(startX, i));
+				}
+				break;
 			}
-			break;
+			possibleMoves.Add(new Vector2(startX, i));
 		}
-		possibleMoves.Add(new Vector2(startX, i));
-	}
-	for (int i = startY - 1; i > -1; i--){
-		if(pieces[startX, i] != null){
-			if(moving_piece.GetRed() != pieces[startX, i].GetRed()){
-				possibleMoves.Add(new Vector2(startX, i));
+		for (int i = startY - 1; i > -1; i--){
+			if(pieces[startX, i] != null){
+				if(moving_piece.GetRed() != pieces[startX, i].GetRed()){
+					possibleMoves.Add(new Vector2(startX, i));
+				}
+				break;
 			}
-			break;
+			possibleMoves.Add(new Vector2(startX, i));
 		}
-		possibleMoves.Add(new Vector2(startX, i));
 	}
-}
-private bool getPosibleMoves(int startX, int startY, string type){
+	
+	private void checkAndAddMove(ChessPiece moving_piece, ArrayList list, Vector2 target){
+		int targetX = (int) target.x;
+		int targetY = (int) target.y;
+
+		if(isInBounds(targetX, targetY)){
+			if(pieces[targetX, targetY] == null){
+				list.Add(target);
+			}
+		}
+	}
+	private ArrayList getPossibleMoves(int startX, int startY, string type){
 		ChessPiece moving_piece = pieces[startX, startY];
 		ArrayList possibleMoves = new ArrayList();
 		bool isRed = pieces[startX, startY].GetRed();
@@ -589,42 +787,26 @@ private bool getPosibleMoves(int startX, int startY, string type){
 		}else if(type=="horse"){
 			if(isInBounds(startX+1, startY)){
 				if(pieces[startX+1, startY]==null){
-					if(pieces[startX+2, startY-1] == null || pieces[startX+2, startY-1].GetRed() != moving_piece.GetRed()){
-						possibleMoves.Add(new Vector2(startX+2, startY-1));
-					}
-					if(pieces[startX+2, startY+1] == null || pieces[startX+2, startY+1].GetRed() != moving_piece.GetRed()){
-						possibleMoves.Add(new Vector2(startX+2, startY+1));
-					}
+					checkAndAddMove(moving_piece, possibleMoves, new Vector2(startX+2, startY-1));
+					checkAndAddMove(moving_piece, possibleMoves, new Vector2(startX+2, startY+1));
 				}
 			}
 			if(isInBounds(startX-1, startY)){
 				if(pieces[startX-1, startY]==null){
-					if(pieces[startX-2, startY-1] == null || pieces[startX-2, startY-1].GetRed() != moving_piece.GetRed()){
-						possibleMoves.Add(new Vector2(startX-2, startY-1));
-					}
-					if(pieces[startX-2, startY+1] == null || pieces[startX-2, startY+1].GetRed() != moving_piece.GetRed()){
-						possibleMoves.Add(new Vector2(startX-2, startY+1));
-					}
+					checkAndAddMove(moving_piece, possibleMoves, new Vector2(startX-2, startY-1));
+					checkAndAddMove(moving_piece, possibleMoves, new Vector2(startX-2, startY+1));
 				}
 			}
 			if(isInBounds(startX, startY-1)){
 				if(pieces[startX, startY-1]==null){
-					if(pieces[startX+1, startY-2] == null || pieces[startX+1, startY-2].GetRed() != moving_piece.GetRed()){
-						possibleMoves.Add(new Vector2(startX+1, startY-2));
-					}
-					if(pieces[startX-1, startY-2] == null || pieces[startX-1, startY-2].GetRed() != moving_piece.GetRed()){
-						possibleMoves.Add(new Vector2(startX-1, startY-2));
-					}
+					checkAndAddMove(moving_piece, possibleMoves, new Vector2(startX+1, startY-2));
+					checkAndAddMove(moving_piece, possibleMoves, new Vector2(startX-1, startY-2));
 				}
 			}
 			if(isInBounds(startX, startY+1)){
 				if(pieces[startX, startY+1]==null){
-					if(pieces[startX+1, startY+2] == null || pieces[startX+1, startY+2].GetRed() != moving_piece.GetRed()){
-					possibleMoves.Add(new Vector2(startX+1, startY+2));
-					}
-					if(pieces[startX-1, startY+2] == null || pieces[startX-1, startY+2].GetRed() != moving_piece.GetRed()){
-					possibleMoves.Add(new Vector2(startX-1, startY+2));
-					}
+					checkAndAddMove(moving_piece, possibleMoves, new Vector2(startX+1, startY+2));
+					checkAndAddMove(moving_piece, possibleMoves, new Vector2(startX-1, startY+2));
 				}
 			}
 		}else if(type=="elephant"){
@@ -823,16 +1005,28 @@ private bool getPosibleMoves(int startX, int startY, string type){
 			}
 		}
 
-		// ALSO show possible moves TODO
-		foreach (Vector2 pos in possibleMoves){
-			GameObject ind = Instantiate(indicator);
-			ind.transform.position = moving_piece.transform.position + new Vector3((pos.y - startY) * 20f, (pos.x - startX) * 20f, 0.0f);
-			indicators.Add(ind);
-			// piece.transform.position = piece.transform.position + new Vector3(yDifference * 20f, xDifference * 20f, 0.0f);
+		for (int i = possibleMoves.Count - 1; i >= 0; i--){
+			Vector2 possibleMove = (Vector2) possibleMoves[i];
+			ChessPiece target = pieces[(int) possibleMove.x, (int) possibleMove.y];
+			if(target != null){
+				if(target.GetRed() == isRedTurn){
+					possibleMoves.RemoveAt(i);
+				}
+			}
 		}
-		return false;
+		return possibleMoves;
 	}
 
+	private void showPossibleMoves(int startX, int startY, string type){
+		// ALSO show possible moves TODO
+		ArrayList possibleMoves = getPossibleMoves(startX, startY, type);
+			foreach (Vector2 pos in possibleMoves){
+				GameObject ind = Instantiate(indicator);
+				ind.transform.position = pieces[startX, startY].transform.position + new Vector3((pos.y - startY) * 20f, (pos.x - startX) * 20f, 0.0f);
+				indicators.Add(ind);
+				// piece.transform.position = piece.transform.position + new Vector3(yDifference * 20f, xDifference * 20f, 0.0f);
+			}
+	}
 	private bool isValidMove(int startX, int startY, int endX, int endY, string type){
 		if(pieces[endX, endY]!=null){
 			if(pieces[startX, startY].GetRed() ==pieces[endX, endY].GetRed()){
@@ -1054,6 +1248,312 @@ private bool getPosibleMoves(int startX, int startY, string type){
 			}
 		}
 		return false;
+	}
+	private void checkAndAddAttack(ChessPiece moving_piece, ArrayList list, Vector2 target){
+		if(isInBounds((int) target.x, (int) target.y)){
+			if(pieces[(int) target.x, (int) target.y] != null){
+				if(moving_piece.GetRed() != pieces[(int) target.x, (int) target.y].GetRed()){
+					list.Add(new Vector2((int) target.x, (int) target.x));
+				}
+			}
+		}
+	}
+	private ArrayList getPossibleAttacks(int startX, int startY, string type){
+		ChessPiece moving_piece = pieces[startX, startY];
+		ArrayList possibleAttacks = new ArrayList();
+		bool isRed = pieces[startX, startY].GetRed();
+		if(type=="chariot"){
+			for (int i = startX + 1; i < 10; i++){
+				if(pieces[i, startY] != null){
+					checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(i, startY));
+					break;
+				}
+			}
+			for (int i = startX - 1; i > -1; i--){
+				if(pieces[i, startY] != null){
+					checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(i, startY));
+					break;
+				}
+			}
+			for (int i = startY + 1; i < 9; i++){
+				if(pieces[startX, i] != null){
+					checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX, i));
+					break;
+				}
+			}
+			for (int i = startY - 1; i > -1; i--){
+				if(pieces[startX, i] != null){
+					checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX, i));
+					break;
+				}
+			}
+		}else if(type=="horse"){
+			if(isInBounds(startX+1, startY)){
+				if(pieces[startX+1, startY]==null){
+					if(pieces[startX+2, startY-1] != null && pieces[startX+2, startY-1].GetRed() != moving_piece.GetRed()){
+						if(moving_piece.GetRed() != pieces[startX+2, startY-1].GetRed()){
+							checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX+2, startY-1));
+						}
+					}
+					if(pieces[startX+2, startY+1] != null && pieces[startX+2, startY+1].GetRed() != moving_piece.GetRed()){
+						if(moving_piece.GetRed() != pieces[startX+2, startY+1].GetRed()){
+							checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX+2, startY+1));
+						}
+					}
+				}
+			}
+			if(isInBounds(startX-1, startY)){
+				if(pieces[startX-1, startY]==null){
+					if(pieces[startX-2, startY-1] != null && pieces[startX-2, startY-1].GetRed() != moving_piece.GetRed()){
+						if(moving_piece.GetRed() != pieces[startX-2, startY-1].GetRed()){
+							checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX-2, startY-1));
+						}
+						
+					}
+					if(pieces[startX-2, startY+1] != null && pieces[startX-2, startY+1].GetRed() != moving_piece.GetRed()){
+						if(moving_piece.GetRed() != pieces[startX-2, startY+1].GetRed()){
+							checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX-2, startY+1));
+						}
+					}
+				}
+			}
+			if(isInBounds(startX, startY-1)){
+				if(pieces[startX, startY-1]==null){
+					if(pieces[startX+1, startY-2] != null && pieces[startX+1, startY-2].GetRed() != moving_piece.GetRed()){
+						if(moving_piece.GetRed() != pieces[startX+1, startY-2].GetRed()){
+							checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX+1, startY-2));
+						}
+					}
+					if(pieces[startX-1, startY-2] != null && pieces[startX-1, startY-2].GetRed() != moving_piece.GetRed()){
+						if(moving_piece.GetRed() != pieces[startX-1, startY-2].GetRed()){
+							checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX-1, startY-2));
+						}
+					}
+				}
+			}
+			if(isInBounds(startX, startY+1)){
+				if(pieces[startX, startY+1]==null){
+					if(pieces[startX+1, startY+2] != null && pieces[startX+1, startY+2].GetRed() != moving_piece.GetRed()){
+						if(moving_piece.GetRed() != pieces[startX+1, startY+2].GetRed()){
+							checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX+1, startY+2));
+						}
+					}
+					if(pieces[startX-1, startY+2] != null && pieces[startX-1, startY+2].GetRed() != moving_piece.GetRed()){
+						if(moving_piece.GetRed() != pieces[startX-1, startY+2].GetRed()){
+							checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX-1, startY+2));
+						}
+					}
+				}
+			}
+		}else if(type=="elephant"){
+			if(isInBounds(startX+1, startY+1)){
+				if(pieces[startX+1, startY+1] == null){
+					if(!isRed){
+						if(startX+2 <= 4){
+							checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX+2, startY+2));
+						}
+					}else{
+						checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX+2, startY+2));
+					}
+				}
+			}
+			if(isInBounds(startX+1, startY-1)){
+				if(pieces[startX+1, startY-1] == null){
+					if(!isRed){
+						if(startX+2 <= 4){
+							checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX+2, startY-2));
+						}
+					}else{
+						checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX+2, startY-2));
+					}
+				}
+			}
+			if(isInBounds(startX-1, startY+1)){
+				if(pieces[startX-1, startY+1]==null){
+					if(isRed){
+						if(startX-2 >= 5){
+							checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX-2, startY+2));
+						}
+					}else{
+						checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX-2, startY+2));
+					}
+				}
+			}
+			if(isInBounds(startX-1, startY-1)){
+				if(pieces[startX-1, startY-1]==null){
+					if(isRed){
+						if(startX-2 >= 5){
+							checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX-2, startY-2));
+						}
+					}else{
+						checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX-2, startY-2));
+					}
+				}
+			}
+		}else if(type=="advisor"){
+			ArrayList advisorBox = new ArrayList();
+			if(isRed){
+				advisorBox.Add(new Vector2(7, 3));
+				advisorBox.Add(new Vector2(7, 5));
+				advisorBox.Add(new Vector2(8, 4));
+				advisorBox.Add(new Vector2(9, 3));
+				advisorBox.Add(new Vector2(9, 5));
+			}else{
+				advisorBox.Add(new Vector2(0, 3));
+				advisorBox.Add(new Vector2(0, 5));
+				advisorBox.Add(new Vector2(1, 4));
+				advisorBox.Add(new Vector2(2, 3));
+				advisorBox.Add(new Vector2(2, 5));
+			}
+			if(advisorBox.Contains(new Vector2(startX+1, startY+1))){
+				checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX+1, startY+1));
+			}
+			
+			if(advisorBox.Contains(new Vector2(startX+1, startY-1))){
+				checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX+1, startY-1));
+			}
+			
+			if(advisorBox.Contains(new Vector2(startX-1, startY+1))){
+				checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX-1, startY+1));
+			}
+			
+			if(advisorBox.Contains(new Vector2(startX-1, startY-1))){
+				checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX-1, startY-1));
+			}
+			/*
+			// foreach (Vector2 pos in possibleMoves){
+			// 	if(pos.x == endX && pos.y == endY && advisorBox.Contains(pos)){
+			// 		if(isInBounds(endX, endY)){
+			// 			return true;
+			// 		}
+			// 	}
+			// }
+			// return false;
+			*/
+		}else if(type=="general"){
+			ArrayList generalBox = new ArrayList();
+			if(isRed){
+				for(int i=7; i<10; i++){
+					for(int j=3; j<6; j++){
+						generalBox.Add(new Vector2(i, j));
+					}
+				}
+			}else{
+				for(int i=0; i<3; i++){
+					for(int j=3; j<6; j++){
+						generalBox.Add(new Vector2(i, j));
+					}
+				}
+			}
+			if(generalBox.Contains(new Vector2(startX+1, startY))){
+				checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX+1, startY));
+			}
+			if(generalBox.Contains(new Vector2(startX-1, startY))){
+			checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX-1, startY));
+			}
+			if(generalBox.Contains(new Vector2(startX, startY+1))){
+			checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX, startY+1));
+			}
+			if(generalBox.Contains(new Vector2(startX, startY-1))){
+			checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX, startY-1));
+			}
+			/*
+			// foreach (Vector2 pos in possibleMoves){
+			// 	if(pos.x == endX && pos.y == endY && generalBox.Contains(pos)){
+			// 		if(isInBounds(endX, endY)){
+			// 			return true;
+			// 		}
+			// 	}
+			// }
+			// return false;
+			*/
+		}else if(type=="cannon"){
+			/* MOVE
+			// for (int i = startX + 1; i < 10; i++){
+			// 	if(pieces[i, startY] != null){
+			// 		break;
+			// 	}
+			// 	possibleMoves.Add(new Vector2(i, startY));
+			// }
+			// for (int i = startX - 1; i > -1; i--){
+			// 	if(pieces[i, startY] != null){
+			// 		break;
+			// 	}
+			// 	possibleMoves.Add(new Vector2(i, startY));
+			// }
+			// for (int i = startY + 1; i < 9; i++){
+			// 	if(pieces[startX, i] != null){
+			// 		break;
+			// 	}
+			// 	possibleMoves.Add(new Vector2(startX, i));
+			// }
+			// for (int i = startY - 1; i > -1; i--){
+			// 	if(pieces[startX, i] != null){
+			// 		break;
+			// 	}
+			// 	possibleMoves.Add(new Vector2(startX, i));
+			// }
+			*/
+			int start;
+			int end;
+			//X attack
+			for (int i = 0; i < 10; i++){
+				if(pieces[i, startY] != null){
+					int countBetween = 0;
+					if(pieces[i, startY].GetRed() == moving_piece.GetRed()){}
+					else{
+						if(startX<i){start=startX; end=i;}else{start=i; end=startX;}
+						for(int j=start+1; j<end; j++){
+							if(pieces[j, startY] != null)countBetween++;
+						}
+						if(countBetween == 1){
+							checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(i, startY));
+						}
+					}
+				}
+			}
+			//Y attack
+			for (int i = 0; i < 9; i++){
+				if(pieces[startX, i] != null){
+					int countBetween = 0;
+					if(pieces[startX, i].GetRed() == moving_piece.GetRed()){}
+					else{
+						if(startY<i){start=startY; end=i;}else{start=i; end=startY;}
+						for(int j=start+1; j<end; j++){
+							if(pieces[startX, j] != null)countBetween++;
+						}
+						if(countBetween == 1){
+							checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX, i));
+						}
+					}
+				}
+			}
+
+			Debug.Log($"Cannon possible attacks: {possibleAttacks}");
+		}else if(type=="soldier"){
+			bool crossedRiver = false;
+			if(isRed){
+				if(pieces[startX-1, startY] != null){
+					checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX-1, startY));	
+				}
+				if(startX<=4){crossedRiver=true;}
+			}else{
+				if(pieces[startX+1, startY] != null){
+					checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX+1, startY));
+				}
+				if(startX>=5){crossedRiver=true;}
+			}
+			if(crossedRiver){
+				if(pieces[startX, startY-1] != null){
+					checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX, startY-1));
+				}
+				if(pieces[startX, startY+1] != null){
+					checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX, startY+1));
+				}
+			}
+		}
+
+		return possibleAttacks;
 	}
 
 	private bool isInBounds(int x, int y){
