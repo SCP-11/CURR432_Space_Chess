@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4729115204488376}
+  - component: {fileID: -6470307449868555024}
   m_Layer: 0
   m_Name: cannonRed
   m_TagString: Untagged
@@ -32,6 +33,19 @@ Transform:
   - {fileID: 388951177380582364}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
+--- !u!114 &-6470307449868555024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1666990010753682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb2835d7832591e49896ac92a85c65c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  beamParticleEffect: {fileID: 8996453232602650908, guid: 647425d9bff437f4b88b6bf353f5e4dd, type: 3}
 --- !u!1 &4400333390723301288
 GameObject:
   m_ObjectHideFlags: 0
@@ -43,6 +57,7 @@ GameObject:
   - component: {fileID: 388951177380582364}
   - component: {fileID: 5757435731768726624}
   - component: {fileID: 1319849203209505278}
+  - component: {fileID: 8311083163337149486}
   m_Layer: 0
   m_Name: Default
   m_TagString: Untagged
@@ -115,3 +130,24 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &8311083163337149486
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4400333390723301288}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 127.1082, y: 38.493633, z: 93.437515}
+  m_Center: {x: 3.523657e-19, y: 18.469082, z: -0.000047389385}

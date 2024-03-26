@@ -9,6 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4717554786598090}
+  - component: {fileID: 5026908314396014051}
+  - component: {fileID: -7084857920580587360}
   m_Layer: 0
   m_Name: cannonBlue
   m_TagString: Untagged
@@ -32,6 +34,40 @@ Transform:
   - {fileID: 8038751664501775286}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 90}
+--- !u!114 &5026908314396014051
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1512568470292272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb2835d7832591e49896ac92a85c65c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  beamParticleEffect: {fileID: 8996453232602650908, guid: 647425d9bff437f4b88b6bf353f5e4dd, type: 3}
+--- !u!65 &-7084857920580587360
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1512568470292272}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &653983226653635251
 GameObject:
   m_ObjectHideFlags: 0
