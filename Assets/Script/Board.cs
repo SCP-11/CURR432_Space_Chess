@@ -56,17 +56,41 @@ public class Board : MonoBehaviour {
 	private List<Vector2> redPiecesPos = new List<Vector2>();
 	private List<Vector2> bluePiecesPos = new List<Vector2>();
 
-	// private Client client;
+	/// <summary>
+	/// Front Lines
+	/// </summary>
+	public GameObject frontlineRedPrefab;
+	public GameObject frontlineBluePrefab;
+	private int[] redPiecesFrontLines = new int[9];
+	private GameObject[] redFrontLineObjects = new GameObject[9];
+	private int[] bluePiecesFrontLines = new int[9];
+	private GameObject[] blueFrontLineObjects = new GameObject[9];
+	
+	/// <summary>
+	/// 
+	/// </summary>
+	private ArrayList possibleAttacks;
+	private ArrayList possibleMoves;
 
+	// private Client client;
 	// Added variables
-	private List<GameObject> indicators = new List<GameObject>();
-	public GameObject indicator;
+	private List<GameObject> moveIndicators = new List<GameObject>();
+	private List<GameObject> attackIndicators = new List<GameObject>();
+	public GameObject moveIndicator;
+	public GameObject attackIndicator;
+
+	private Vector3 boardOrigin = new Vector3(-80f, -90f, 9f);
+	private Vector3 boardToWorld(Vector2 boardLoc){
+		return new Vector3(boardOrigin.x + boardLoc.y * 20f, boardOrigin.y + boardLoc.x * 20f, boardOrigin.z);
+	}
 	private void Start()
 	{
 		Instance = this;
 		// client = FindObjectOfType<Client>();
 		// isRed = client.isHost;
 		GenerateBoard();
+		InitFrontLines();
+		UpdateFrontLines();
 		GeneralCheckedText = Instantiate(GeneralCheckedText);
 		GeneralCheckedText.GetComponent<TextMesh>().color = new Color(0f, 0f, 0f, 0f);
 		invalidMoveText = Instantiate(invalidMoveText);
@@ -119,7 +143,10 @@ public class Board : MonoBehaviour {
 		}
 		
 		if(Input.GetMouseButtonDown(0)){
-			foreach (GameObject ind in indicators){
+			foreach (GameObject ind in attackIndicators){
+				Destroy(ind);
+			}
+			foreach (GameObject ind in moveIndicators){
 				Destroy(ind);
 			}
 
@@ -227,10 +254,16 @@ public class Board : MonoBehaviour {
 				/////////////// 	ADDED	/////////////
 				// dragging = true;
 				originalPosition = selectedPiece.transform.position;
-				showPossibleMoves((int) startDrag.x, (int) startDrag.y, selectedPiece.Type);
+				int startX = (int) startDrag.x;
+				int startY = (int) startDrag.y;
+				possibleMoves = getPossibleMoves(startX, startY, selectedPiece.Type);
+				// PrintArrayList(possibleMoves);
+				showPossibleMoves(startX, startY);
+				possibleAttacks = getPossibleAttacks(startX, startY, selectedPiece.Type);
+				showPossibleAttacks(startX, startY);
 			}else{
 				if(selectedPiece != null){	//	ATTACK
-					TryMove((int) startDrag.x, (int) startDrag.y, x, y);
+					TryAttack((int) startDrag.x, (int) startDrag.y, x, y);
 					if(moveCompleted){
 						if(isRedTurn){
 							redCurvyArrow.transform.position = new Vector3(-139.9f, 81, 10f);
@@ -239,7 +272,10 @@ public class Board : MonoBehaviour {
 							redCurvyArrow.transform.position = new Vector3(-139.9f, 81, 300f);
 							blueCurvyArrow.transform.position = new Vector3(-139.9f, -81f, 10f);
 						}
-						foreach (GameObject ind in indicators){
+						foreach (GameObject ind in attackIndicators){
+							Destroy(ind);
+						}
+						foreach (GameObject ind in moveIndicators){
 							Destroy(ind);
 						}
 					}
@@ -259,9 +295,13 @@ public class Board : MonoBehaviour {
 						redCurvyArrow.transform.position = new Vector3(-139.9f, 81, 300f);
 						blueCurvyArrow.transform.position = new Vector3(-139.9f, -81f, 10f);
 					}
-					foreach (GameObject ind in indicators){
+					foreach (GameObject ind in attackIndicators){
 						Destroy(ind);
 					}
+					foreach (GameObject ind in moveIndicators){
+						Destroy(ind);
+					}
+
 				}
 				selectedPiece = null;
 			}
@@ -375,18 +415,7 @@ public class Board : MonoBehaviour {
 		//endX endY is correct for blue
 		//Check if in board
 		if(endX >= 0 && endX < 10 && endY >= 0 && endY < 9 && selectedPiece != null){
-			ArrayList possibleAttacks = getPossibleAttacks(startX, startY, selectedPiece.Type);
-			// PrintArrayList(possibleAttacks);
-			if(possibleAttacks.Contains(new Vector2(endX, endY))){
-				Debug.Log($"{(selectedPiece.GetRed()? "RED": "BLUE")}\t {selectedPiece.Type.ToUpper()}\t, FROM\t ({startX}, {startY}), \tATTACK\t ({endX}, {endY})");
-				if(pieces[endX, endY]!=null){ //eat the pawn
-					//TODO: call attack function of each pawnPiece class for animation and effects.
-					selectedPiece.AttackAnimation(selectedPiece.transform.position, new Vector2(startX,startY), new Vector2(endX, endY));
-					RemovePiece(endX, endY);
-					isRedTurn = ! isRedTurn;
-					return;
-				}
-			}else if(isValidMove(startX, startY, endX, endY, selectedPiece.Type)){
+			if(possibleMoves.Contains(new Vector2(endX, endY))){
 				Debug.Log($"{(selectedPiece.GetRed()? "RED": "BLUE")}\t {selectedPiece.Type.ToUpper()}\t, FROM\t ({startX}, {startY}), \tMOVE to\t ({endX}, {endY})");
 				if(!GeneralChecked(isRedTurn)){ //Normal nothing!
 					// Debug.Log("Normal round");
@@ -396,6 +425,8 @@ public class Board : MonoBehaviour {
 					}
 					MovePiece(selectedPiece, endX, endY);
 					moveCompleted = true;
+					//	Update the front line
+					UpdateFrontLines();
 					isRedTurn = ! isRedTurn;
 					return;
 				}else{
@@ -500,7 +531,42 @@ public class Board : MonoBehaviour {
 	}
 
 	public void TryAttack(int startX, int startY, int endX, int endY){
+		startDrag = new Vector2(startX, startY);
+		selectedPiece = pieces[startX, startY];
+		// Debug.Log($"Start is [{startX}, {startY}]. End is [{endX} {endY}] selected piece is "+ (selectedPiece.GetRed()? "red": "blue"));
+		bool invalidMove = false;
+		// if(isRed == isRedTurn){
+		selectedPiece.transform.position = originalPosition;
+		// }
+		//endX endY is correct for blue
+		//Check if in board
+		if(endX >= 0 && endX < 10 && endY >= 0 && endY < 9 && selectedPiece != null){
+			// PrintArrayList(possibleAttacks);
+			if(possibleAttacks.Contains(new Vector2(endX, endY))){
+				Debug.Log($"{(selectedPiece.GetRed()? "RED": "BLUE")}\t {selectedPiece.Type.ToUpper()}\t, FROM\t ({startX}, {startY}), \tATTACK\t ({endX}, {endY})");
+				if(pieces[endX, endY]!=null){ //eat the pawn
+					//TODO: call attack function of each pawnPiece class for animation and effects.
+					selectedPiece.AttackAnimation(selectedPiece.transform.position, new Vector2(startX,startY), new Vector2(endX, endY));
+					RemovePiece(endX, endY);
+					isRedTurn = ! isRedTurn;
+					UpdateFrontLines();
+					return;
+				}
+			}else{
+				//Released at the orginal place
+				invalidMove = true;
 
+				// Show possible moving locations
+				// indicators = 
+			}
+		}else{
+			invalidMove = true;
+		}
+		if(invalidMove){
+			invalidAlpha = 1;
+			invalidMoveText.GetComponent<TextMesh>().color = new Color(0f, 0f, 0f, invalidAlpha);
+		}
+		moveCompleted = false;
 	}
 	private void MovePiece(ChessPiece piece, int x, int y){
 		if(piece==null){
@@ -680,6 +746,74 @@ public class Board : MonoBehaviour {
 		redPiecesPos.Add(new Vector2(6, 8));
 	}
 
+	private void InitFrontLines(){
+		for (int i = 0; i < 9; i++)
+        {
+            // int valueToAssign = 10; // Example value, you can change this to whatever value you need
+            redPiecesFrontLines[i] = 5;
+			GameObject redFrontLine = Instantiate(frontlineRedPrefab);
+			redFrontLine.transform.position = boardToWorld(new Vector2(5, i));
+			redFrontLineObjects[i] = redFrontLine;
+            bluePiecesFrontLines[i] = 4;
+			GameObject blueFrontLine = Instantiate(frontlineBluePrefab);
+			blueFrontLine.transform.position = boardToWorld(new Vector2(4, i));
+			blueFrontLineObjects[i] = blueFrontLine;
+        }
+	}
+
+	private void ShowFrontLines(){
+		for (int i = 0; i < 9; i++)
+        {
+			
+				redFrontLineObjects[i].transform.position = boardToWorld(new Vector2(redPiecesFrontLines[i], i));
+				blueFrontLineObjects[i].transform.position = boardToWorld(new Vector2(bluePiecesFrontLines[i], i));
+
+				/**
+            // int valueToAssign = 10; // Example value, you can change this to whatever value you need
+			if(isRedTurn){
+				redFrontLineObjects[i].transform.position = boardToWorld(new Vector2(redPiecesFrontLines[i], i));
+				redFrontLineObjects[i].SetActive(true);
+				blueFrontLineObjects[i].SetActive(false);
+			}else{
+				blueFrontLineObjects[i].transform.position = boardToWorld(new Vector2(bluePiecesFrontLines[i], i));
+				blueFrontLineObjects[i].SetActive(true);
+				redFrontLineObjects[i].SetActive(false);
+			}
+			**/
+        }
+	}
+
+	private void UpdateFrontLines(){
+		for (int i = 0; i < 9; i++)
+        {
+            // int valueToAssign = 10; // Example value, you can change this to whatever value you need
+            redPiecesFrontLines[i] = 9;
+            bluePiecesFrontLines[i] = 0;
+        }
+		for (int i = 0; i < 10; i++){
+			for (int j = 0; j < 9; j++){
+				if(pieces[i, j] != null){
+					int range = pieces[i, j].LockRange;
+					for (int x = Math.Max(i - range, 0); x <= Math.Min(i + range, 9); x ++){
+						for (int y = Math.Max(j - range, 0); y <= Math.Min(j + range, 8); y ++){
+							if(pieces[i,j].GetRed()){
+							
+								if (redPiecesFrontLines[y] > x){
+									redPiecesFrontLines[y] = x;
+								}
+							}else{
+								if (bluePiecesFrontLines[y] < x){
+								bluePiecesFrontLines[y] = x;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		ShowFrontLines();
+	}
+
 	private bool GeneralChecked(bool isRed){
 		if(isRed){
 			for(int i=0; i<bluePiecesPos.Count; i++){
@@ -754,9 +888,7 @@ public class Board : MonoBehaviour {
 		ArrayList possibleMoves = new ArrayList();
 		bool isRed = pieces[startX, startY].GetRed();
 		if(type=="chariot"){
-			// int start = -1;
-			// int end = -1;
-			addCrossMoves(startX, startY, possibleMoves);
+			possibleMoves = moving_piece.GetPossibleMoves(pieces, startX, startY);
 			/**
 			// if(startX!=endX && startY!=endY)return false;
 			// if(startX==endX && startY==endY)return false;
@@ -941,16 +1073,25 @@ public class Board : MonoBehaviour {
 		return possibleMoves;
 	}
 
-	private void showPossibleMoves(int startX, int startY, string type){
+	private void showPossibleMoves(int startX, int startY){
 		// ALSO show possible moves TODO
-		ArrayList possibleMoves = getPossibleMoves(startX, startY, type);
-			foreach (Vector2 pos in possibleMoves){
-				GameObject ind = Instantiate(indicator);
+		foreach (Vector2 pos in possibleMoves){
+			GameObject ind = Instantiate(moveIndicator);
+			ind.transform.position = pieces[startX, startY].transform.position + new Vector3((pos.y - startY) * 20f, (pos.x - startX) * 20f, 0.0f);
+			moveIndicators.Add(ind);
+			// piece.transform.position = piece.transform.position + new Vector3(yDifference * 20f, xDifference * 20f, 0.0f);
+		}
+	}
+
+	private void showPossibleAttacks(int startX, int startY){
+			foreach (Vector2 pos in possibleAttacks){
+				GameObject ind = Instantiate(attackIndicator);
 				ind.transform.position = pieces[startX, startY].transform.position + new Vector3((pos.y - startY) * 20f, (pos.x - startX) * 20f, 0.0f);
-				indicators.Add(ind);
+				attackIndicators.Add(ind);
 				// piece.transform.position = piece.transform.position + new Vector3(yDifference * 20f, xDifference * 20f, 0.0f);
 			}
 	}
+
 	private bool isValidMove(int startX, int startY, int endX, int endY, string type){
 		if(pieces[endX, endY]!=null){
 			if(pieces[startX, startY].GetRed() ==pieces[endX, endY].GetRed()){
@@ -1187,58 +1328,20 @@ public class Board : MonoBehaviour {
 		ArrayList possibleAttacks = new ArrayList();
 		bool isRed = pieces[startX, startY].GetRed();
 		if(type=="chariot"){
-			for (int i = startX + 1; i < 10; i++){
-				if(pieces[i, startY] != null){
-					checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(i, startY));
-					break;
-				}
-			}
-			for (int i = startX - 1; i > -1; i--){
-				if(pieces[i, startY] != null){
-					checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(i, startY));
-					break;
-				}
-			}
-			for (int i = startY + 1; i < 9; i++){
-				if(pieces[startX, i] != null){
-					checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX, i));
-					break;
-				}
-			}
-			for (int i = startY - 1; i > -1; i--){
-				if(pieces[startX, i] != null){
-					checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX, i));
-					break;
-				}
-			}
+			possibleAttacks = moving_piece.GetPossibleAttacks(pieces, moving_piece.GetRed()? redPiecesFrontLines: bluePiecesFrontLines ,startX, startY);
 		}else if(type=="horse"){
 			if(isInBounds(startX+1, startY)){
 				if(pieces[startX+1, startY]==null){
-					if(pieces[startX+2, startY-1] != null && pieces[startX+2, startY-1].GetRed() != moving_piece.GetRed()){
-						if(moving_piece.GetRed() != pieces[startX+2, startY-1].GetRed()){
-							checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX+2, startY-1));
-						}
-					}
-					if(pieces[startX+2, startY+1] != null && pieces[startX+2, startY+1].GetRed() != moving_piece.GetRed()){
-						if(moving_piece.GetRed() != pieces[startX+2, startY+1].GetRed()){
-							checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX+2, startY+1));
-						}
-					}
+					checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX+2, startY-1));
+					checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX+2, startY+1));
 				}
 			}
 			if(isInBounds(startX-1, startY)){
 				if(pieces[startX-1, startY]==null){
-					if(pieces[startX-2, startY-1] != null && pieces[startX-2, startY-1].GetRed() != moving_piece.GetRed()){
-						if(moving_piece.GetRed() != pieces[startX-2, startY-1].GetRed()){
-							checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX-2, startY-1));
-						}
-						
-					}
-					if(pieces[startX-2, startY+1] != null && pieces[startX-2, startY+1].GetRed() != moving_piece.GetRed()){
-						if(moving_piece.GetRed() != pieces[startX-2, startY+1].GetRed()){
-							checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX-2, startY+1));
-						}
-					}
+					
+					checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX-2, startY-1));
+			
+					checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX-2, startY+1));
 				}
 			}
 			if(isInBounds(startX, startY-1)){
@@ -1249,16 +1352,10 @@ public class Board : MonoBehaviour {
 			}
 			if(isInBounds(startX, startY+1)){
 				if(pieces[startX, startY+1]==null){
-					if(pieces[startX+1, startY+2] != null && pieces[startX+1, startY+2].GetRed() != moving_piece.GetRed()){
-						if(moving_piece.GetRed() != pieces[startX+1, startY+2].GetRed()){
-							checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX+1, startY+2));
-						}
-					}
-					if(pieces[startX-1, startY+2] != null && pieces[startX-1, startY+2].GetRed() != moving_piece.GetRed()){
-						if(moving_piece.GetRed() != pieces[startX-1, startY+2].GetRed()){
-							checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX-1, startY+2));
-						}
-					}
+					
+					checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX+1, startY+2));
+			
+					checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX-1, startY+2));
 				}
 			}
 		}else if(type=="elephant"){
@@ -1449,7 +1546,7 @@ public class Board : MonoBehaviour {
 				}
 			}
 			*/
-			possibleAttacks = moving_piece.GetPossibleAttacks(pieces, startX, startY);
+			possibleAttacks = moving_piece.GetPossibleAttacks(pieces, moving_piece.GetRed()? redPiecesFrontLines: bluePiecesFrontLines ,startX, startY);
 
 			// Debug.Log($"Cannon possible attacks: {possibleAttacks}");
 		}else if(type=="soldier"){
@@ -1491,18 +1588,14 @@ public class Board : MonoBehaviour {
 		GameObject go;
 		if(red){
 			go = Instantiate(chariotRed) as GameObject;
-			go.AddComponent<ChessPiece>();
-			go.GetComponent<ChessPiece>().Type = "chariot";
-			go.GetComponent<ChessPiece>().SetRed(true);
+			go.GetComponent<ChariotPiece>().SetRed(true);
 		}else{
 			go = Instantiate(chariotBlue) as GameObject;
-			go.AddComponent<ChessPiece>();
-			go.GetComponent<ChessPiece>().Type = "chariot";
-			go.GetComponent<ChessPiece>().SetRed(false);
+			go.GetComponent<ChariotPiece>().SetRed(false);
 		}
-		go.GetComponent<ChessPiece>().SetBoardPosition(x, y);
+		go.GetComponent<ChariotPiece>().SetBoardPosition(x, y);
 		go.transform.position = new Vector3(px, py, pz);
-		ChessPiece p = go.GetComponent<ChessPiece>();
+		ChariotPiece p = go.GetComponent<ChariotPiece>();
 		pieces[x, y] = p;
 	}
 	private void GenerateHorse(int x, int y, float px, float py, float pz, bool red)

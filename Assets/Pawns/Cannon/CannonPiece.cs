@@ -13,11 +13,14 @@ public class CannonPiece : ChessPiece
 	private LineRenderer lr;
 	public CannonPiece(){
 		this.Type = "cannon";
+		this.LockRange = 2;
 	}
 
 
     public override ArrayList GetPossibleMoves(ChessPiece[,] pieces, int startX, int startY){
 		ArrayList possibleMoves = new ArrayList();
+
+		/**
 		for (int i = startX + 1; i < 10; i++){
 			if(pieces[i, startY] != null){
 				break;
@@ -76,10 +79,15 @@ public class CannonPiece : ChessPiece
 				}
 			}
 		}
+		**/
+		checkAndAddMove(pieces,possibleMoves, new Vector2(startX+1, startY));
+		checkAndAddMove(pieces,possibleMoves, new Vector2(startX-1, startY));
+		checkAndAddMove(pieces,possibleMoves, new Vector2(startX, startY+1));
+		checkAndAddMove(pieces,possibleMoves, new Vector2(startX, startY-1));
 
 		return possibleMoves;
     }
-	public override ArrayList GetPossibleAttacks(ChessPiece[,] pieces, int startX, int startY){
+	public override ArrayList GetPossibleAttacks(ChessPiece[,] pieces, int[] frontLines, int startX, int startY){
 			ArrayList possibleAttacks = new ArrayList();
 
 			int start;
@@ -121,7 +129,7 @@ public class CannonPiece : ChessPiece
 					}
 				}
 			}
-
+			RemoveOutRangeAttack(possibleAttacks, frontLines);
 			return possibleAttacks;
 		}
 		

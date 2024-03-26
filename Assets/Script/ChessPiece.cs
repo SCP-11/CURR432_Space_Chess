@@ -8,6 +8,7 @@ public class ChessPiece : MonoBehaviour {
 	private bool atRiver;
 	private Vector2 boardPosition;
 
+	private int lockRange;
 	public ChessPiece(string t, bool r, int x, int y){
 		type = t;
 		red = r;
@@ -18,6 +19,7 @@ public class ChessPiece : MonoBehaviour {
 		type = "";
 		red = true;
 		boardPosition = new Vector2(-1, -1);
+		lockRange = 1;
 	}
 
     public string Type
@@ -30,6 +32,18 @@ public class ChessPiece : MonoBehaviour {
         set
         {
             type = value;
+        }
+    }
+	public int LockRange
+    {
+        get
+        {
+            return lockRange;
+        }
+
+        set
+        {
+            lockRange = value;
         }
     }
 
@@ -52,10 +66,22 @@ public class ChessPiece : MonoBehaviour {
 	public virtual ArrayList GetPossibleMoves(ChessPiece[,] pieces, int startX, int startY){
 		return new ArrayList();
 	}
-	public virtual ArrayList GetPossibleAttacks(ChessPiece[,] pieces, int startX, int startY){
+	public virtual ArrayList GetPossibleAttacks(ChessPiece[,] pieces, int[] frontLines, int startX, int startY){
 		return new ArrayList();
 	}
-
+	public void RemoveOutRangeAttack(ArrayList possibleAttacks, int[] frontLines){
+		for (int i = possibleAttacks.Count-1; i >=0; i--){
+			bool canLock;
+			if(GetRed()){
+				canLock = (int)((Vector2) possibleAttacks[i]).x >= frontLines[(int)((Vector2) possibleAttacks[i]).y];
+			}else{
+				canLock = (int)((Vector2) possibleAttacks[i]).x <= frontLines[(int)((Vector2) possibleAttacks[i]).y];
+			}
+			if(!canLock){
+				possibleAttacks.RemoveAt(i);
+			}
+		}
+	}
 	public bool isInBounds(int x, int y){
 		if(x >= 0 && x < 10 && y >= 0 && y < 9){
 			return true;
