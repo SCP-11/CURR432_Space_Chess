@@ -10,7 +10,7 @@ public class ChariotPiece : ChessPiece
 	private LineRenderer lr;
 	public ChariotPiece(){
 		this.Type = "chariot";
-		this.LockRange = 3;
+		this.LockRange = 1;
 	}
 
 

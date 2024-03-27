@@ -9,6 +9,7 @@ public class ChessPiece : MonoBehaviour {
 	private Vector2 boardPosition;
 
 	private int lockRange;
+	private bool moveAttack;
 	public ChessPiece(string t, bool r, int x, int y){
 		type = t;
 		red = r;
@@ -20,6 +21,7 @@ public class ChessPiece : MonoBehaviour {
 		red = true;
 		boardPosition = new Vector2(-1, -1);
 		lockRange = 1;
+		moveAttack = true;
 	}
 
     public string Type
@@ -44,6 +46,18 @@ public class ChessPiece : MonoBehaviour {
         set
         {
             lockRange = value;
+        }
+    }
+	public bool MoveAttack
+    {
+        get
+        {
+            return moveAttack;
+        }
+
+        set
+        {
+            moveAttack = value;
         }
     }
 

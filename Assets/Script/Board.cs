@@ -548,6 +548,9 @@ public class Board : MonoBehaviour {
 					//TODO: call attack function of each pawnPiece class for animation and effects.
 					selectedPiece.AttackAnimation(selectedPiece.transform.position, new Vector2(startX,startY), new Vector2(endX, endY));
 					RemovePiece(endX, endY);
+					if(selectedPiece.MoveAttack){
+						MovePiece(selectedPiece, endX, endY);
+					}
 					isRedTurn = ! isRedTurn;
 					UpdateFrontLines();
 					return;
@@ -1049,15 +1052,15 @@ public class Board : MonoBehaviour {
 		}else if(type=="soldier"){
 			bool crossedRiver = false;
 			if(isRed){
-				possibleMoves.Add(new Vector2(startX-1, startY));
+				checkAndAddMove(possibleMoves, new Vector2(startX-1, startY));
 				if(startX<=4){crossedRiver=true;}
 			}else{
-				possibleMoves.Add(new Vector2(startX+1, startY));
+				checkAndAddMove(possibleMoves, new Vector2(startX+1, startY));
 				if(startX>=5){crossedRiver=true;}
 			}
 			if(crossedRiver){
-				possibleMoves.Add(new Vector2(startX, startY-1));
-				possibleMoves.Add(new Vector2(startX, startY+1));
+				checkAndAddMove(possibleMoves, new Vector2(startX, startY-1));
+				checkAndAddMove(possibleMoves, new Vector2(startX, startY+1));
 			}
 		}
 
@@ -1552,23 +1555,18 @@ public class Board : MonoBehaviour {
 		}else if(type=="soldier"){
 			bool crossedRiver = false;
 			if(isRed){
-				if(pieces[startX-1, startY] != null){
-					checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX-1, startY));	
-				}
+				
+				checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX-1, startY));	
 				if(startX<=4){crossedRiver=true;}
 			}else{
-				if(pieces[startX+1, startY] != null){
-					checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX+1, startY));
-				}
+				
+				checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX+1, startY));
 				if(startX>=5){crossedRiver=true;}
 			}
 			if(crossedRiver){
-				if(pieces[startX, startY-1] != null){
-					checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX, startY-1));
-				}
-				if(pieces[startX, startY+1] != null){
-					checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX, startY+1));
-				}
+				checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX, startY-1));
+				
+				checkAndAddAttack(moving_piece, possibleAttacks, new Vector2(startX, startY+1));
 			}
 		}
 

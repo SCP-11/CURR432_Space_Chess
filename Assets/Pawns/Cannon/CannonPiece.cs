@@ -14,12 +14,50 @@ public class CannonPiece : ChessPiece
 	public CannonPiece(){
 		this.Type = "cannon";
 		this.LockRange = 2;
+		this.MoveAttack = false;
 	}
 
 
     public override ArrayList GetPossibleMoves(ChessPiece[,] pieces, int startX, int startY){
 		ArrayList possibleMoves = new ArrayList();
 
+		for (int i = startX + 1; i < 10; i++){
+			if(pieces[i, startY] != null){
+				if(GetRed() != pieces[i, startY].GetRed()){
+					possibleMoves.Add(new Vector2(i, startY));
+				}
+				break;
+			}
+			possibleMoves.Add(new Vector2(i, startY));
+		}
+		for (int i = startX - 1; i > -1; i--){
+			if(pieces[i, startY] != null){
+				if(GetRed() != pieces[i, startY].GetRed()){
+					possibleMoves.Add(new Vector2(i, startY));
+				}
+				break;
+			}
+			possibleMoves.Add(new Vector2(i, startY));
+		}
+		for (int i = startY + 1; i < 9; i++){
+			if(pieces[startX, i] != null){
+				if(GetRed() != pieces[startX, i].GetRed()){
+					possibleMoves.Add(new Vector2(startX, i));
+				}
+				break;
+			}
+			possibleMoves.Add(new Vector2(startX, i));
+		}
+		for (int i = startY - 1; i > -1; i--){
+			if(pieces[startX, i] != null){
+				if(GetRed() != pieces[startX, i].GetRed()){
+					possibleMoves.Add(new Vector2(startX, i));
+				}
+				break;
+			}
+			possibleMoves.Add(new Vector2(startX, i));
+		}
+		return possibleMoves;
 		/**
 		for (int i = startX + 1; i < 10; i++){
 			if(pieces[i, startY] != null){
@@ -80,12 +118,12 @@ public class CannonPiece : ChessPiece
 			}
 		}
 		**/
-		checkAndAddMove(pieces,possibleMoves, new Vector2(startX+1, startY));
-		checkAndAddMove(pieces,possibleMoves, new Vector2(startX-1, startY));
-		checkAndAddMove(pieces,possibleMoves, new Vector2(startX, startY+1));
-		checkAndAddMove(pieces,possibleMoves, new Vector2(startX, startY-1));
+		// checkAndAddMove(pieces,possibleMoves, new Vector2(startX+1, startY));
+		// checkAndAddMove(pieces,possibleMoves, new Vector2(startX-1, startY));
+		// checkAndAddMove(pieces,possibleMoves, new Vector2(startX, startY+1));
+		// checkAndAddMove(pieces,possibleMoves, new Vector2(startX, startY-1));
 
-		return possibleMoves;
+		// return possibleMoves;
     }
 	public override ArrayList GetPossibleAttacks(ChessPiece[,] pieces, int[] frontLines, int startX, int startY){
 			ArrayList possibleAttacks = new ArrayList();
