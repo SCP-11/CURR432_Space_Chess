@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using Unity.VisualScripting;
+using System.Linq;
 
 public class Board : MonoBehaviour {
 
@@ -55,7 +56,10 @@ public class Board : MonoBehaviour {
 	private Vector2 generalBluePos;
 	private List<Vector2> redPiecesPos = new List<Vector2>();
 	private List<Vector2> bluePiecesPos = new List<Vector2>();
-
+	public GameObject spaceDebrisPrefab;
+	private int[,] spaceDebrisCount = new int[10,9];	
+	private GameObject[,] spaceDebrisObjects = new GameObject[10,9];
+	private int debrisCountDown = 2;
 	/// <summary>
 	/// Front Lines
 	/// </summary>
@@ -426,8 +430,7 @@ public class Board : MonoBehaviour {
 					MovePiece(selectedPiece, endX, endY);
 					moveCompleted = true;
 					//	Update the front line
-					UpdateFrontLines();
-					isRedTurn = ! isRedTurn;
+					SwitchTurn();	//Switch turn
 					return;
 				}else{
 					ChessPiece[,] copyBoard = (ChessPiece[,]) pieces.Clone();
@@ -551,8 +554,7 @@ public class Board : MonoBehaviour {
 					if(selectedPiece.MoveAttack){
 						MovePiece(selectedPiece, endX, endY);
 					}
-					isRedTurn = ! isRedTurn;
-					UpdateFrontLines();
+					SwitchTurn();
 					return;
 				}
 			}else{
@@ -641,6 +643,12 @@ public class Board : MonoBehaviour {
 		pieces[x,y] = null;
 	}
 
+	private void removeDebris(int x, int y){
+		if(spaceDebrisCount[x, y] == 1){
+			spaceDebrisCount[x, y] = 0;
+			Destroy(GameObject.Find("SpaceDebris" + x + y));
+		}
+	}
 	private Vector2 GetBoardPosition(float x, float y){
 		int yResult = (int) Math.Round((x+80.0)/20.0);
 		int xResult = (int) Math.Round((y+90.0)/20.0);
@@ -786,6 +794,11 @@ public class Board : MonoBehaviour {
         }
 	}
 
+	private void SwitchTurn(){
+		isRedTurn = !isRedTurn;
+		UpdateFrontLines();
+		UpdateSpaceDebris();
+	}
 	private void UpdateFrontLines(){
 		for (int i = 0; i < 9; i++)
         {
@@ -816,7 +829,66 @@ public class Board : MonoBehaviour {
 		}
 		ShowFrontLines();
 	}
+	private void UpdateSpaceDebris(){
+		//Randomly generate space debris on the map
+		//every2 turns
+		
+		String debug ="";
+		debug+="Update Space Debris... ";
 
+		
+		//Update debris count
+		for (int i = 0; i < 10; i++){
+			for (int j = 0; j < 9; j++){
+				if(spaceDebrisCount[i, j] == 1){
+					Animator animator = spaceDebrisObjects[i,j].GetComponent<Animator>();
+					// Destroy(Che)
+					// spaceDebris[i, j] = 0;
+					if(pieces[i, j] != null){
+						//Remove the piece
+						debug+=$"Remove Piece [{i}, {j}]....";
+						RemovePiece(i, j);
+					}
+					animator.SetTrigger("Next");
+				}
+				if(spaceDebrisCount[i, j] != 0){
+					Animator animator = spaceDebrisObjects[i,j].GetComponent<Animator>();
+					//trigger animation of debris
+
+					// Trigger an animation by setting a parameter
+					animator.SetTrigger("Next");
+
+					spaceDebrisCount[i, j] --;
+				}
+			}
+		}
+
+		if(debrisCountDown == 0){
+			while(true){
+				debug+="Generate Debris... ";
+				Vector2 pos = new Vector2(UnityEngine.Random.Range(0, 10), UnityEngine.Random.Range(0, 9));
+				if(spaceDebrisCount[(int)pos.x, (int)pos.y] == 0){
+					// int type = UnityEngine.Random.Range(0, 3);
+					int count = 3;
+					GameObject debris = Instantiate(spaceDebrisPrefab);
+					spaceDebrisObjects[(int)pos.x, (int)pos.y] = debris;
+					debris.transform.position = boardToWorld(pos);
+					spaceDebrisCount[(int)pos.x, (int)pos.y] = count;
+					break;
+				}
+			}
+			debrisCountDown = 2;
+		}
+		// for ((int i = 0; i < 10; i++){
+		// 	for (int j = 0; j < 9; j++){
+		// 		if(spaceDebris[i, j] != null){
+		// 		}
+		// 	})
+		// }
+		debrisCountDown --;
+
+		Debug.Log(debug);
+	}
 	private bool GeneralChecked(bool isRed){
 		if(isRed){
 			for(int i=0; i<bluePiecesPos.Count; i++){

@@ -899,6 +899,7 @@ MonoBehaviour:
   invalidMoveText: {fileID: 1768332419788560, guid: 9f21a6d96511ead439ba963d44f561cd, type: 3}
   invalidAlpha: 0
   generalAlpha: 0
+  spaceDebrisPrefab: {fileID: 4925497042929636954, guid: 0f1f7e43a9709774c9e023b0f4eaab75, type: 3}
   frontlineRedPrefab: {fileID: 7454382912518720780, guid: a31bd23ac7307914aaf8da329222791b, type: 3}
   frontlineBluePrefab: {fileID: 7454382912518720780, guid: 7414cb4291997064a8967266c4b63ac9, type: 3}
   moveIndicator: {fileID: 8113535120150506050, guid: 8043522d5ff6ed5488eace277d07163f, type: 3}
