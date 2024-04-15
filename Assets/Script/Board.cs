@@ -221,8 +221,8 @@ public class Board : MonoBehaviour {
 			return;
 		}
 
-		mouseOverX = (Input.mousePosition.x);
-        mouseOverY = (Input.mousePosition.y);
+		mouseOverX = Input.mousePosition.x;
+        mouseOverY = Input.mousePosition.y;
         mousePosition = Camera.main.ScreenToWorldPoint(new Vector3 (mouseOverX,mouseOverY,186.75f));
 		boardPosition = GetBoardPosition(mousePosition.x, mousePosition.y);
 	}
