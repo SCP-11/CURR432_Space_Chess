@@ -23,36 +23,36 @@ public class CannonPiece : ChessPiece
 
 		for (int i = startX + 1; i < 10; i++){
 			if(pieces[i, startY] != null){
-				if(GetRed() != pieces[i, startY].GetRed()){
-					possibleMoves.Add(new Vector2(i, startY));
-				}
+				// if(GetRed() != pieces[i, startY].GetRed()){
+				// 	possibleMoves.Add(new Vector2(i, startY));
+				// }
 				break;
 			}
 			possibleMoves.Add(new Vector2(i, startY));
 		}
 		for (int i = startX - 1; i > -1; i--){
 			if(pieces[i, startY] != null){
-				if(GetRed() != pieces[i, startY].GetRed()){
-					possibleMoves.Add(new Vector2(i, startY));
-				}
+				// if(GetRed() != pieces[i, startY].GetRed()){
+				// 	possibleMoves.Add(new Vector2(i, startY));
+				// }
 				break;
 			}
 			possibleMoves.Add(new Vector2(i, startY));
 		}
 		for (int i = startY + 1; i < 9; i++){
 			if(pieces[startX, i] != null){
-				if(GetRed() != pieces[startX, i].GetRed()){
-					possibleMoves.Add(new Vector2(startX, i));
-				}
+				// if(GetRed() != pieces[startX, i].GetRed()){
+				// 	possibleMoves.Add(new Vector2(startX, i));
+				// }
 				break;
 			}
 			possibleMoves.Add(new Vector2(startX, i));
 		}
 		for (int i = startY - 1; i > -1; i--){
 			if(pieces[startX, i] != null){
-				if(GetRed() != pieces[startX, i].GetRed()){
-					possibleMoves.Add(new Vector2(startX, i));
-				}
+				// if(GetRed() != pieces[startX, i].GetRed()){
+				// 	possibleMoves.Add(new Vector2(startX, i));
+				// }
 				break;
 			}
 			possibleMoves.Add(new Vector2(startX, i));

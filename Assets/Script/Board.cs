@@ -49,7 +49,7 @@ public class Board : MonoBehaviour {
 	private Vector3 originalPosition;
 
 	private bool moveCompleted;
-	private bool isRedTurn = true;
+	public bool isRedTurn = true;
 	private bool isRed = true;
 
 	private Vector2 generalRedPos;
@@ -57,7 +57,7 @@ public class Board : MonoBehaviour {
 	private List<Vector2> redPiecesPos = new List<Vector2>();
 	private List<Vector2> bluePiecesPos = new List<Vector2>();
 	public GameObject spaceDebrisPrefab;
-	private int[,] spaceDebrisCount = new int[10,9];	
+	public int[,] spaceDebrisCount = new int[10,9];	
 	private GameObject[,] spaceDebrisObjects = new GameObject[10,9];
 	private int debrisCountDown = 2;
 	/// <summary>
@@ -65,9 +65,9 @@ public class Board : MonoBehaviour {
 	/// </summary>
 	public GameObject frontlineRedPrefab;
 	public GameObject frontlineBluePrefab;
-	private int[] redPiecesFrontLines = new int[9];
+	public int[] redPiecesFrontLines = new int[9];
 	private GameObject[] redFrontLineObjects = new GameObject[9];
-	private int[] bluePiecesFrontLines = new int[9];
+	public int[] bluePiecesFrontLines = new int[9];
 	private GameObject[] blueFrontLineObjects = new GameObject[9];
 	
 	/// <summary>
@@ -147,13 +147,7 @@ public class Board : MonoBehaviour {
 		}
 		
 		if(Input.GetMouseButtonDown(0)){
-			foreach (GameObject ind in attackIndicators){
-				Destroy(ind);
-			}
-			foreach (GameObject ind in moveIndicators){
-				Destroy(ind);
-			}
-
+			UpdateMouseOver();
 			/*	//////////////	OLD	//////////////
 			// Debug.Log("RED" + isRedTurn + "mouse down 0");
 			// if(isRed == isRedTurn){
@@ -242,10 +236,18 @@ public class Board : MonoBehaviour {
 		}
 	}
 	*/
-	private void SelectPiece(int x, int y)
+	public bool SelectPiece(int x, int y)
 	{
+		boardPosition = new Vector2(x, y);
+		foreach (GameObject ind in attackIndicators){
+			Destroy(ind);
+		}
+		foreach (GameObject ind in moveIndicators){
+			Destroy(ind);
+		}
+
 		if(x < 0 || x > 9 || y < 0 || y > 8){
-			return;
+			return false;
 		}
 
 		ChessPiece p = pieces[x, y];
@@ -286,6 +288,7 @@ public class Board : MonoBehaviour {
 					selectedPiece = null;
 				}
 			}
+			return true;
 		}else{
 			if(selectedPiece != null){
 				////////////	TRY MOVE	///////////////
@@ -309,6 +312,8 @@ public class Board : MonoBehaviour {
 				}
 				selectedPiece = null;
 			}
+
+			return false;
 		}
 
 		/*
