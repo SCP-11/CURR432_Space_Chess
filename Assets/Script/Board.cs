@@ -41,9 +41,9 @@ public class Board : MonoBehaviour {
 	private float mouseOverX;
 	private float mouseOverY;
 	private Vector3 mousePosition;
-	private Vector2 boardPosition;
+	public Vector2 boardPosition;
 
-	private ChessPiece selectedPiece;
+	public ChessPiece selectedPiece;
 	private Vector2 startDrag;
 	private bool dragging = false;
 	private Vector3 originalPosition;
@@ -54,8 +54,10 @@ public class Board : MonoBehaviour {
 
 	private Vector2 generalRedPos;
 	private Vector2 generalBluePos;
-	private List<Vector2> redPiecesPos = new List<Vector2>();
-	private List<Vector2> bluePiecesPos = new List<Vector2>();
+	public List<Vector2> redPiecesPos = new List<Vector2>();
+	public List<Vector2> bluePiecesPos = new List<Vector2>();
+	public int redPiecesCount = 16;
+	public int bluePiecesCount = 16;
 	public GameObject spaceDebrisPrefab;
 	public int[,] spaceDebrisCount = new int[10,9];	
 	private GameObject[,] spaceDebrisObjects = new GameObject[10,9];
@@ -84,37 +86,42 @@ public class Board : MonoBehaviour {
 	public GameObject attackIndicator;
 
 	private Vector3 boardOrigin = new Vector3(-80f, -90f, 9f);
+
+	public String winner = "";
 	private Vector3 boardToWorld(Vector2 boardLoc){
 		return new Vector3(boardOrigin.x + boardLoc.y * 20f, boardOrigin.y + boardLoc.x * 20f, boardOrigin.z);
 	}
 	private void Start()
 	{
 		Instance = this;
-		// client = FindObjectOfType<Client>();
-		// isRed = client.isHost;
-		GenerateBoard();
-		InitFrontLines();
-		UpdateFrontLines();
+		
 		GeneralCheckedText = Instantiate(GeneralCheckedText);
 		GeneralCheckedText.GetComponent<TextMesh>().color = new Color(0f, 0f, 0f, 0f);
-		invalidMoveText = Instantiate(invalidMoveText);
-		invalidMoveText.GetComponent<TextMesh>().color = new Color(0f, 0f, 0f, 0f);
 		redCurvyArrow = Instantiate(redCurvyArrow);
 		blueCurvyArrow = Instantiate(blueCurvyArrow);
 		redCurvyArrow.transform.position = new Vector3(-139.9f, 81, 10f);
 		blueCurvyArrow.transform.position = new Vector3(-139.9f, -81f, 300f);
+		invalidMoveText = Instantiate(invalidMoveText);
+		invalidMoveText.GetComponent<TextMesh>().color = new Color(0f, 0f, 0f, 0f);
+		// client = FindObjectOfType<Client>();
+		// isRed = client.isHost;
+		StartNew();
 
 		//ADDED
 		// indicators = GameObject[];
 	}
 
+	private void StartNew(){
+		winner = "";
+		GenerateBoard();
+		InitFrontLines();
+		UpdateFrontLines();
+	}
 	private void Update()
 	{
-		UpdateMouseOver();
+		// UpdateMouseOver();
 
 		//boardPosition : mouse position on board
-		int x = (int) boardPosition.x;
-		int y = (int) boardPosition.y;
 
 		if(generalAlpha>0){
 			generalAlpha -= 0.01f;
@@ -147,7 +154,12 @@ public class Board : MonoBehaviour {
 		}
 		
 		if(Input.GetMouseButtonDown(0)){
+			if(winner != ""){
+				Restart();
+			}
 			UpdateMouseOver();
+			int x = (int) boardPosition.x;
+			int y = (int) boardPosition.y;
 			/*	//////////////	OLD	//////////////
 			// Debug.Log("RED" + isRedTurn + "mouse down 0");
 			// if(isRed == isRedTurn){
@@ -207,6 +219,27 @@ public class Board : MonoBehaviour {
 		*/
 	}
 
+	private void CleanBoard(){
+		foreach (ChessPiece piece in pieces){
+			if(piece != null){
+				Destroy(piece.gameObject);
+			}
+		}
+		for (int i = 0; i < 9; i++)
+        {
+            // int valueToAssign = 10; // Example value, you can change this to whatever value you need
+            redPiecesFrontLines[i] = 5;
+			Destroy(redFrontLineObjects[i]);
+            bluePiecesFrontLines[i] = 4;
+			Destroy(blueFrontLineObjects[i]);
+        }
+
+	}
+
+	public void Restart(){
+		CleanBoard();
+		StartNew();
+	}
 	private void UpdateMouseOver()
 	{
 		if(!Camera.main) //Check if camera exists
@@ -236,9 +269,13 @@ public class Board : MonoBehaviour {
 		}
 	}
 	*/
-	public bool SelectPiece(int x, int y)
+	public int SelectPiece(int x, int y)
 	{
+		int rtn = 0;
 		boardPosition = new Vector2(x, y);
+		if(x < 0 || x > 9 || y < 0 || y > 8){
+			return 0;
+		}
 		foreach (GameObject ind in attackIndicators){
 			Destroy(ind);
 		}
@@ -246,9 +283,6 @@ public class Board : MonoBehaviour {
 			Destroy(ind);
 		}
 
-		if(x < 0 || x > 9 || y < 0 || y > 8){
-			return false;
-		}
 
 		ChessPiece p = pieces[x, y];
 		
@@ -267,9 +301,10 @@ public class Board : MonoBehaviour {
 				showPossibleMoves(startX, startY);
 				possibleAttacks = getPossibleAttacks(startX, startY, selectedPiece.Type);
 				showPossibleAttacks(startX, startY);
+				rtn = 1;
 			}else{
 				if(selectedPiece != null){	//	ATTACK
-					TryAttack((int) startDrag.x, (int) startDrag.y, x, y);
+					rtn = TryAttack((int) startDrag.x, (int) startDrag.y, x, y)? 2:0;
 					if(moveCompleted){
 						if(isRedTurn){
 							redCurvyArrow.transform.position = new Vector3(-139.9f, 81, 10f);
@@ -288,11 +323,10 @@ public class Board : MonoBehaviour {
 					selectedPiece = null;
 				}
 			}
-			return true;
 		}else{
 			if(selectedPiece != null){
 				////////////	TRY MOVE	///////////////
-				TryMove((int) startDrag.x, (int) startDrag.y, x, y);
+				rtn = TryMove((int) startDrag.x, (int) startDrag.y, x, y)? 2:0;
 				dragging = false;
 				if(moveCompleted){
 					if(isRedTurn){
@@ -312,10 +346,10 @@ public class Board : MonoBehaviour {
 				}
 				selectedPiece = null;
 			}
-
-			return false;
 		}
 
+		// Debug.Log("SelectPiece: "+ rtn);
+		return rtn;
 		/*
 		if(selectedPiece == null){
 			if(p != null){
@@ -412,7 +446,7 @@ public class Board : MonoBehaviour {
 		}
 	}
 
-	public void TryMove(int startX, int startY, int endX, int endY)
+	public bool TryMove(int startX, int startY, int endX, int endY)
 	{
 		startDrag = new Vector2(startX, startY);
 		selectedPiece = pieces[startX, startY];
@@ -426,7 +460,7 @@ public class Board : MonoBehaviour {
 		if(endX >= 0 && endX < 10 && endY >= 0 && endY < 9 && selectedPiece != null){
 			if(possibleMoves.Contains(new Vector2(endX, endY))){
 				Debug.Log($"{(selectedPiece.GetRed()? "RED": "BLUE")}\t {selectedPiece.Type.ToUpper()}\t, FROM\t ({startX}, {startY}), \tMOVE to\t ({endX}, {endY})");
-				if(!GeneralChecked(isRedTurn)){ //Normal nothing!
+				// if(!GeneralChecked(isRedTurn)){ //Normal nothing!
 					// Debug.Log("Normal round");
 					
 					if(pieces[endX, endY]!=null){ //eat the pawn
@@ -436,8 +470,11 @@ public class Board : MonoBehaviour {
 					moveCompleted = true;
 					//	Update the front line
 					SwitchTurn();	//Switch turn
-					return;
-				}else{
+					return true;
+				// }
+				/**
+				else
+				{
 					ChessPiece[,] copyBoard = (ChessPiece[,]) pieces.Clone();
 					Vector2 originalgeneralRedPos = new Vector2(generalRedPos.x, generalRedPos.y);
 					Vector2 originalgeneralBluePos = new Vector2(generalBluePos.x, generalBluePos.y);
@@ -519,7 +556,9 @@ public class Board : MonoBehaviour {
 						isRedTurn = ! isRedTurn;
 						return;
 					}
+					
 				}
+				**/
 			}else{
 				//Released at the orginal place
 				invalidMove = true;
@@ -535,10 +574,10 @@ public class Board : MonoBehaviour {
 			invalidMoveText.GetComponent<TextMesh>().color = new Color(0f, 0f, 0f, invalidAlpha);
 		}
 		moveCompleted = false;
-
+		return false;
 	}
 
-	public void TryAttack(int startX, int startY, int endX, int endY){
+	public bool TryAttack(int startX, int startY, int endX, int endY){
 		startDrag = new Vector2(startX, startY);
 		selectedPiece = pieces[startX, startY];
 		// Debug.Log($"Start is [{startX}, {startY}]. End is [{endX} {endY}] selected piece is "+ (selectedPiece.GetRed()? "red": "blue"));
@@ -560,7 +599,7 @@ public class Board : MonoBehaviour {
 						MovePiece(selectedPiece, endX, endY);
 					}
 					SwitchTurn();
-					return;
+					return true;
 				}
 			}else{
 				//Released at the orginal place
@@ -577,6 +616,7 @@ public class Board : MonoBehaviour {
 			invalidMoveText.GetComponent<TextMesh>().color = new Color(0f, 0f, 0f, invalidAlpha);
 		}
 		moveCompleted = false;
+		return false;
 	}
 	private void MovePiece(ChessPiece piece, int x, int y){
 		if(piece==null){
@@ -645,7 +685,21 @@ public class Board : MonoBehaviour {
 			bluePiecesPos.RemoveAt(removePos);
 		}
 
+		if(pieces[x, y].Type == "general"){
+			Debug.Log("Game Over");
+			GameOver(isRed);
+		}
 		pieces[x,y] = null;
+	}
+
+	private void GameOver(bool redLose){
+			if(redLose){
+				//
+				winner = "Blue";
+			}else{
+				//
+				winner = "Red";
+			}
 	}
 
 	private void removeDebris(int x, int y){
@@ -872,7 +926,7 @@ public class Board : MonoBehaviour {
 			while(true){
 				debug+="Generate Debris... ";
 				Vector2 pos = new Vector2(UnityEngine.Random.Range(0, 10), UnityEngine.Random.Range(0, 9));
-				if(spaceDebrisCount[(int)pos.x, (int)pos.y] == 0){
+				if(spaceDebrisCount[(int)pos.x, (int)pos.y] <= 0){
 					// int type = UnityEngine.Random.Range(0, 3);
 					int count = 3;
 					GameObject debris = Instantiate(spaceDebrisPrefab);
@@ -892,7 +946,7 @@ public class Board : MonoBehaviour {
 		// }
 		debrisCountDown --;
 
-		Debug.Log(debug);
+		// Debug.Log(debug);
 	}
 	private bool GeneralChecked(bool isRed){
 		if(isRed){

@@ -426,28 +426,13 @@ GameObject:
   - component: {fileID: 408827890}
   - component: {fileID: 408827889}
   - component: {fileID: 408827888}
-  - component: {fileID: 408827887}
   m_Layer: 0
   m_Name: AI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &408827887
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 408827886}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DecisionPeriod: 1
-  TakeActionsBetweenDecisions: 0
+  m_IsActive: 1
 --- !u!114 &408827888
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -463,9 +448,10 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 10
+  MaxStep: 0
   board: {fileID: 1908031482}
-  isRed: 0
+  isRed: 1
+  heuristic: 0
 --- !u!114 &408827889
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -479,17 +465,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 198
+    VectorObservationSize: 199
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 0
-      BranchSizes: 0a000000090000000a00000009000000
-    VectorActionSize: 0a000000090000000a00000009000000
+      BranchSizes: 0a00000009000000
+    VectorActionSize: 0a00000009000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 0}
-  m_InferenceDevice: 0
+  m_Model: {fileID: 5022602860645237092, guid: 6ba0b3db945afa14a8dd3b6b7798e13a, type: 3}
+  m_InferenceDevice: 3
   m_BehaviorType: 0
   m_BehaviorName: Space_Chess
   TeamId: 0
@@ -1058,7 +1044,13 @@ MonoBehaviour:
   invalidMoveText: {fileID: 1768332419788560, guid: 9f21a6d96511ead439ba963d44f561cd, type: 3}
   invalidAlpha: 0
   generalAlpha: 0
+  boardPosition: {x: 0, y: 0}
+  selectedPiece: {fileID: 0}
   isRedTurn: 1
+  redPiecesPos: []
+  bluePiecesPos: []
+  redPiecesCount: 16
+  bluePiecesCount: 16
   spaceDebrisPrefab: {fileID: 4925497042929636954, guid: 0f1f7e43a9709774c9e023b0f4eaab75, type: 3}
   frontlineRedPrefab: {fileID: 7454382912518720780, guid: a31bd23ac7307914aaf8da329222791b, type: 3}
   frontlineBluePrefab: {fileID: 7454382912518720780, guid: 7414cb4291997064a8967266c4b63ac9, type: 3}
@@ -1066,6 +1058,7 @@ MonoBehaviour:
   bluePiecesFrontLines: 000000000000000000000000000000000000000000000000000000000000000000000000
   moveIndicator: {fileID: 8113535120150506050, guid: 8043522d5ff6ed5488eace277d07163f, type: 3}
   attackIndicator: {fileID: 8113535120150506050, guid: 61f1e0dbbed56ce40898781d361cc199, type: 3}
+  winner: 
 --- !u!1 &1923781382
 GameObject:
   m_ObjectHideFlags: 0
@@ -1077,28 +1070,14 @@ GameObject:
   - component: {fileID: 1923781386}
   - component: {fileID: 1923781385}
   - component: {fileID: 1923781384}
-  - component: {fileID: 1923781383}
+  - component: {fileID: 1923781387}
   m_Layer: 0
-  m_Name: AI (1)
+  m_Name: AI P2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1923781383
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1923781382}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DecisionPeriod: 1
-  TakeActionsBetweenDecisions: 0
 --- !u!114 &1923781384
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1114,9 +1093,10 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 10
+  MaxStep: 0
   board: {fileID: 1908031482}
   isRed: 0
+  heuristic: 0
 --- !u!114 &1923781385
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1130,17 +1110,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 198
+    VectorObservationSize: 199
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 0
-      BranchSizes: 0a000000090000000a00000009000000
-    VectorActionSize: 0a000000090000000a00000009000000
+      BranchSizes: 0a00000009000000
+    VectorActionSize: 0a00000009000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: a3c63670320c82c438d0a9e054ed6434, type: 3}
-  m_InferenceDevice: 0
+  m_Model: {fileID: 5022602860645237092, guid: 6ba0b3db945afa14a8dd3b6b7798e13a, type: 3}
+  m_InferenceDevice: 3
   m_BehaviorType: 0
   m_BehaviorName: Space_Chess
   TeamId: 0
@@ -1162,6 +1142,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1923781387
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1923781382}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2902496c0120472b90269f94a0aec7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Record: 0
+  NumStepsToRecord: 0
+  DemonstrationName: Chess_AI_Demo
+  DemonstrationDirectory: Demos
 --- !u!1 &1960864032
 GameObject:
   m_ObjectHideFlags: 0
@@ -1261,27 +1257,27 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3721363008284878, guid: ab2aaa7f72fb157428a8fc76d59f1dda, type: 3}
       propertyPath: m_LocalScale.x
-      value: 40.43799
+      value: 52.099228
       objectReference: {fileID: 0}
     - target: {fileID: 3721363008284878, guid: ab2aaa7f72fb157428a8fc76d59f1dda, type: 3}
       propertyPath: m_LocalScale.y
-      value: 40.43799
+      value: 52.099228
       objectReference: {fileID: 0}
     - target: {fileID: 3721363008284878, guid: ab2aaa7f72fb157428a8fc76d59f1dda, type: 3}
       propertyPath: m_LocalScale.z
-      value: 40.43799
+      value: 52.099228
       objectReference: {fileID: 0}
     - target: {fileID: 3721363008284878, guid: ab2aaa7f72fb157428a8fc76d59f1dda, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -141.4
+      value: -167
       objectReference: {fileID: 0}
     - target: {fileID: 3721363008284878, guid: ab2aaa7f72fb157428a8fc76d59f1dda, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 9.200001
+      value: 26.3
       objectReference: {fileID: 0}
     - target: {fileID: 3721363008284878, guid: ab2aaa7f72fb157428a8fc76d59f1dda, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -53.99984
+      value: -110.6
       objectReference: {fileID: 0}
     - target: {fileID: 3721363008284878, guid: ab2aaa7f72fb157428a8fc76d59f1dda, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1493,5 +1489,5 @@ SceneRoots:
   - {fileID: 918782496}
   - {fileID: 151740905}
   - {fileID: 1960864034}
-  - {fileID: 408827890}
   - {fileID: 1923781386}
+  - {fileID: 408827890}
