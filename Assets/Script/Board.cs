@@ -71,6 +71,8 @@ public class Board : MonoBehaviour {
 	private GameObject[] redFrontLineObjects = new GameObject[9];
 	public int[] bluePiecesFrontLines = new int[9];
 	private GameObject[] blueFrontLineObjects = new GameObject[9];
+
+	public GameObject explosionPrefab;
 	
 	/// <summary>
 	/// 
@@ -665,6 +667,7 @@ public class Board : MonoBehaviour {
 		// Debug.Log("EAT");
 		// RemovePiece(pieces[x, y].GetRed(), x, y);
 		pieces[x, y].SetBoardPosition(-1, -1);
+		Instantiate(explosionPrefab, pieces[x, y].transform.position, Quaternion.identity);
 		pieces[x, y].transform.position = pieces[x, y].transform.position + new Vector3(0f, 0f, 300f);
 		// }
 
