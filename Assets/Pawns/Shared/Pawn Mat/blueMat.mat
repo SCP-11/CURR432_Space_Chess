@@ -26,7 +26,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _GlossMapScale: 0.185
-    - _Glossiness: 0.743
+    - _Glossiness: 0.533
     - _Metallic: 0.206
     - _SmoothnessTextureChannel: 0
     m_Colors:
