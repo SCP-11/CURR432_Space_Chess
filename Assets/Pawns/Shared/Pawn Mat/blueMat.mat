@@ -27,7 +27,7 @@ Material:
     m_Floats:
     - _GlossMapScale: 0.185
     - _Glossiness: 0.743
-    - _Metallic: 0
+    - _Metallic: 0.206
     - _SmoothnessTextureChannel: 0
     m_Colors:
     - _Color: {r: 0.2735849, g: 0.028765647, b: 0, a: 1}

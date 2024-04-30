@@ -172,7 +172,9 @@ public class CannonPiece : ChessPiece
 			return possibleAttacks;
 		}
 		
-	public override void AttackAnimation(Vector3 startPosition, Vector2 start, Vector2 target){
+	public override void AttackAnimation(Board board, Vector3 startPosition, Vector2 start, ChessPiece targetPiece, int endX, int endY){
+		int targetX = (int) targetPiece.GetBoardPosition().x;
+		int targetY = (int) targetPiece.GetBoardPosition().y;
 		currentBeam = Instantiate(beamParticleEffect, startPosition, Quaternion.identity);
 		
 		// Set the end point of the beam
@@ -180,10 +182,14 @@ public class CannonPiece : ChessPiece
         if (lineRenderer != null)
         {
             lineRenderer.SetPosition(0, startPosition);
-            lineRenderer.SetPosition(1, startPosition + new Vector3((target.y - start.y) * 20f, (target.x - start.x) * 20f, 0.0f));
+            lineRenderer.SetPosition(1, startPosition + new Vector3((targetY - start.y) * 20f, (targetX - start.x) * 20f, 0.0f));
         }
 
 		timer = 0f;
+		board.RemovePieceAfterAnimation(targetPiece);
+		if(MoveAttack){
+			board.MovePieceAfterAnimation(this, endX, endY);
+		}
 	}
 
 	public void Update(){
@@ -217,19 +223,24 @@ public class CannonPiece : ChessPiece
 				// ChessPiece target = pieces[selfX+(red? -2: 2), selfY+1];
 				int targetX = selfX+(red? -3: 3);
 				int targetY = selfY+1;
-				if(pieces[targetX, targetY] != null){
-					if(pieces[targetX, targetY].GetRed() != red){
+				ChessPiece target = pieces[targetX, targetY];
+				if(target != null){
+					if(target.GetRed() != red){
 						d+= $"Remove {(targetX, targetY)}";	///////////	DEBUG
-						board.RemovePiece(targetX, targetY);
+
+						pieces[targetX, targetY] = null;
+						board.RemovePieceAfterAnimation(target);
 					}
 				}
 
 				targetX = selfX+(red? -3: 3);
 				targetY = selfY-1;
-				if(pieces[targetX, targetY] != null){
-					if(pieces[targetX, targetY].GetRed() != red){
+				target = pieces[targetX, targetY];
+				if(target != null){
+					if(target.GetRed() != red){
 						d+= $"Remove {(targetX, targetY)}";	///////////	DEBUG
-						board.RemovePiece(targetX, targetY);
+						pieces[targetX, targetY] = null;
+						board.RemovePieceAfterAnimation(target);
 					}
 				}
 				Debug.Log(d);	///////////	DEBUG

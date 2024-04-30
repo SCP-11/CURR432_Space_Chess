@@ -127,6 +127,9 @@ public class Board : MonoBehaviour {
 	}
 	private void Update()
 	{
+		String d = "";
+		d += $"Red: {redPiecesCount} Blue: {bluePiecesCount}\n";
+		Debug.Log(d);
 		if(!play){
 			return;
 		}
@@ -478,104 +481,25 @@ public class Board : MonoBehaviour {
 				Debug.Log($"{(selectedPiece.GetRed()? "RED": "BLUE")}\t {selectedPiece.Type.ToUpper()}\t, FROM\t ({startX}, {startY}), \tMOVE to\t ({endX}, {endY})");
 				// if(!GeneralChecked(isRedTurn)){ //Normal nothing!
 					// Debug.Log("Normal round");
+					ChessPiece target = pieces[endX, endY];
+					// if(target!=null){ //eat the pawn
+					// 	// pieces[endX, endY] = null;
+					// 	RemovePieceBeforeAnimation(endX, endY);
+					// }
+					ChessPiece movedPiece = selectedPiece;
+					MovePieceBeforeAnimation(movedPiece, endX, endY);
+					// MovePiece(selectedPiece, endX, endY);
+					// if(target!=null){
+					// 	RemovePieceAfterAnimation(target);
+					// }
 					
-					if(pieces[endX, endY]!=null){ //eat the pawn
-						RemovePiece(endX, endY);
-					}
-					MovePiece(selectedPiece, endX, endY);
+					MovePieceAfterAnimation(movedPiece, endX, endY);
 					moveSound.Play();
 					moveCompleted = true;
 					//	Update the front line
 					SwitchTurn();	//Switch turn
 					return true;
 				// }
-				/**
-				else
-				{
-					ChessPiece[,] copyBoard = (ChessPiece[,]) pieces.Clone();
-					Vector2 originalgeneralRedPos = new Vector2(generalRedPos.x, generalRedPos.y);
-					Vector2 originalgeneralBluePos = new Vector2(generalBluePos.x, generalBluePos.y);
-					Vector2 removePos = new Vector2(-1, -1);
-					bool removePosIsRed = false;
-					if(!isRedTurn){
-						for(int i= 0; i<bluePiecesPos.Count; i++){
-							if(bluePiecesPos[i].x == startX && bluePiecesPos[i].y == startY){
-								if(bluePiecesPos[i].x == generalBluePos.x && bluePiecesPos[i].y == generalBluePos.y){
-									generalBluePos = new Vector2(endX, endY);
-								}
-								if(pieces[endX, endY] != null){
-									removePos = new Vector2(endX, endY);
-									removePosIsRed = pieces[endX, endY].GetRed();
-									if(pieces[endX, endY]!=null){ //eat the pawn
-										RemovePiece(endX, endY);
-									}
-								}
-								bluePiecesPos[i] = new Vector2(endX, endY);
-								pieces[endX, endY] = selectedPiece;
-								pieces[startX, startY] = null;
-							}
-						}
-					}else{
-						for(int i= 0; i<redPiecesPos.Count; i++){
-							if(redPiecesPos[i].x == startX && redPiecesPos[i].y == startY){
-								if(redPiecesPos[i].x == generalRedPos.x && redPiecesPos[i].y == generalRedPos.y){
-									generalRedPos = new Vector2(endX, endY);
-								}
-								if(pieces[endX, endY] != null){
-									removePos = new Vector2(endX, endY);
-									removePosIsRed = pieces[endX, endY].GetRed();
-									if(pieces[endX, endY]!=null){ //eat the pawn
-										RemovePiece(endX, endY);
-									}
-								}
-								redPiecesPos[i] = new Vector2(endX, endY);
-								pieces[endX, endY] = selectedPiece;
-								pieces[startX, startY] = null;
-							}
-						}
-					}
-					bool isGeneralChecked = GeneralChecked(isRedTurn);
-
-					if(removePos.x != -1 && removePos.y != -1){
-						if(removePosIsRed){
-							redPiecesPos.Add(removePos);
-						}else{
-							bluePiecesPos.Add(removePos);
-						}
-					}
-
-					if(isRedTurn){
-						for(int i=0; i<redPiecesPos.Count; i++){
-							if(redPiecesPos[i].x == endX && redPiecesPos[i].y == endY){
-								redPiecesPos[i] = new Vector2(startX, startY);
-							}
-						}
-					}else{
-						for(int i=0; i<bluePiecesPos.Count; i++){
-							if(bluePiecesPos[i].x == endX && bluePiecesPos[i].y == endY){
-								bluePiecesPos[i] = new Vector2(startX, startY);
-							}
-						}
-					}
-					pieces = copyBoard;
-					if(isGeneralChecked){
-						generalAlpha = 1;
-						GeneralCheckedText.GetComponent<TextMesh>().color = new Color(0f, 0f, 0f, generalAlpha);
-						moveCompleted = false;
-						generalBluePos = originalgeneralBluePos;
-						generalRedPos = originalgeneralRedPos;
-						return;
-					}else{
-						generalBluePos = originalgeneralBluePos;
-						generalRedPos = originalgeneralRedPos;
-						MovePiece(selectedPiece, endX, endY);
-						moveCompleted = true;
-						isRedTurn = ! isRedTurn;
-						return;
-					}
-					
-				}
-				**/
 			}else{
 				//Released at the orginal place
 				invalidMove = true;
@@ -610,11 +534,16 @@ public class Board : MonoBehaviour {
 				Debug.Log($"{(selectedPiece.GetRed()? "RED": "BLUE")}\t {selectedPiece.Type.ToUpper()}\t, FROM\t ({startX}, {startY}), \tATTACK\t ({endX}, {endY})");
 				if(pieces[endX, endY]!=null){ //eat the pawn
 					//TODO: call attack function of each pawnPiece class for animation and effects.
-					selectedPiece.AttackAnimation(selectedPiece.transform.position, new Vector2(startX,startY), new Vector2(endX, endY));
-					RemovePiece(endX, endY);
+					ChessPiece target = pieces[endX, endY];
+					RemovePieceBeforeAnimation(endX, endY);
 					if(selectedPiece.MoveAttack){
-						MovePiece(selectedPiece, endX, endY);
+						MovePieceBeforeAnimation(selectedPiece, endX, endY);
 					}
+					selectedPiece.AttackAnimation(this, selectedPiece.transform.position, new Vector2(startX,startY), target, endX, endY);
+					// RemovePieceAfterAnimation(target);
+					// if(selectedPiece.MoveAttack){
+					// 	MovePieceAfterAnimation(selectedPiece, endX, endY);
+					// }
 					SwitchTurn();
 					return true;
 				}
@@ -678,17 +607,105 @@ public class Board : MonoBehaviour {
 		piece.CheckSpecial(this, pieces);
 	}
 
-	public void RemovePiece(int x, int y){
-		bool isRed = pieces[x, y].GetRed();
-		/////////////////////////////////////////////////Attack
-		// if(pieces[x, y]!=null){ //eat the pawn
-		// Debug.Log("EAT");
-		// RemovePiece(pieces[x, y].GetRed(), x, y);
-		pieces[x, y].SetBoardPosition(-1, -1);
-		Instantiate(explosionPrefab, pieces[x, y].transform.position, Quaternion.identity);
-		pieces[x, y].transform.position = pieces[x, y].transform.position + new Vector3(0f, 0f, 300f);
-		// }
+	public void MovePieceBeforeAnimation(ChessPiece piece, int x, int y){
+		int startX = (int) piece.GetBoardPosition().x;
+		int startY = (int) piece.GetBoardPosition().y;
+		pieces[startX, startY] = null;
+		// Debug.Log("Moving RED"+piece.GetRed());
+		if(piece.GetRed()){
+			for(int i=0; i<redPiecesPos.Count; i++){
+				if(piece.GetBoardPosition() == redPiecesPos[i]){
+					redPiecesPos[i] = new Vector2(x, y);
+				}
+			}
+		}else{
+			for(int i=0; i<bluePiecesPos.Count; i++){
+				if(piece.GetBoardPosition() == bluePiecesPos[i]){
+					bluePiecesPos[i] = new Vector2(x, y);
+				}
+			}
+		}
+		if(piece.Type == "general"){
+			if(piece.GetRed()){
+				generalRedPos = new Vector2(x, y);
+			}else{
+				generalBluePos = new Vector2(x, y);
+			}
+		}
+		pieces[x, y] = piece;
 
+	}
+
+	public void MovePieceAfterAnimation(ChessPiece piece, int x, int y){
+		int startX = (int) piece.GetBoardPosition().x;
+		int startY = (int) piece.GetBoardPosition().y;
+		int xDifference = x - startX;
+		int yDifference = y - startY;
+		// Debug.Log($"Start in MovePiece is [{startX} {startY}]. Diff is [{xDifference} {yDifference}]. Current Pos is [{piece.transform.position}]");	//	DEBUG
+		// piece.transform.position = piece.transform.position + new Vector3(yDifference * 20f, xDifference * 20f, 0.0f);
+	
+		piece.SetBoardPosition(x, y);
+		
+		piece.transform.position = boardToWorld(piece.GetBoardPosition());
+		piece.CheckSpecial(this, pieces);
+	}
+
+	// public void RemovePieceAfterAnimation(int x, int y){
+	// 	bool isRed = pieces[x, y].GetRed();
+	// 	/////////////////////////////////////////////////Attack
+	// 	// if(pieces[x, y]!=null){ //eat the pawn
+	// 	// Debug.Log("EAT");
+	// 	// RemovePiece(pieces[x, y].GetRed(), x, y);
+	// 	pieces[x, y].SetBoardPosition(-1, -1);
+	// 	Instantiate(explosionPrefab, pieces[x, y].transform.position, Quaternion.identity);
+	// 	pieces[x, y].transform.position = pieces[x, y].transform.position + new Vector3(0f, 0f, 300f);
+	// 	// }
+
+	// 	int removePos=-1;
+	// 	if(isRed){
+	// 		for(int i=0; i < redPiecesPos.Count; i++){
+	// 			if(redPiecesPos[i].x == x && redPiecesPos[i].y == y){
+	// 				removePos = i;
+	// 			}
+	// 		}
+	// 		redPiecesPos.RemoveAt(removePos);
+	// 	}else{
+	// 		for(int i=0; i < bluePiecesPos.Count; i++){
+	// 			if(bluePiecesPos[i].x == x && bluePiecesPos[i].y == y){
+	// 				removePos = i;
+	// 			}
+	// 		}
+	// 		bluePiecesPos.RemoveAt(removePos);
+	// 	}
+
+	// 	if(pieces[x, y].Type == "general"){
+	// 		Debug.Log("Game Over");
+	// 		GameOver(isRed);
+	// 	}
+	// 	pieces[x,y] = null;
+	// }
+	
+	public void RemovePieceAfterAnimation(ChessPiece target){
+		bool isRed = target.GetRed();
+		/////////////////////////////////////////////////Attack
+		// if(target!=null){ //eat the pawn
+		// Debug.Log("EAT");
+		// RemovePiece(target.GetRed(), x, y);
+		target.SetBoardPosition(-1, -1);
+		Instantiate(explosionPrefab, target.transform.position, Quaternion.identity);
+		target.transform.position = target.transform.position + new Vector3(0f, 0f, 300f);
+		// }
+		
+
+		if(target.Type == "general"){
+			Debug.Log("Game Over");
+			GameOver(isRed);
+		}
+	}
+
+	protected void RemovePieceBeforeAnimation(int x, int y){
+		
+		bool isRed = pieces[x, y].GetRed();
 		int removePos=-1;
 		if(isRed){
 			for(int i=0; i < redPiecesPos.Count; i++){
@@ -705,14 +722,8 @@ public class Board : MonoBehaviour {
 			}
 			bluePiecesPos.RemoveAt(removePos);
 		}
-
-		if(pieces[x, y].Type == "general"){
-			Debug.Log("Game Over");
-			GameOver(isRed);
-		}
-		pieces[x,y] = null;
+		pieces[x, y] = null;
 	}
-
 	private void GameOver(bool redLose){
 			endMenu.SetActive(true);
 			StopPlay();
@@ -753,8 +764,8 @@ public class Board : MonoBehaviour {
 		bluePiecesPos.Add(new Vector2(0, 0));
 		bluePiecesPos.Add(new Vector2(0, 8));
 
-		GenerateHorse(0, 1, -56.7f, -90f, 14.3f, false);
-		GenerateHorse(0, 7, 61.56f, -90f, 14.3f, false);
+		GenerateHorse(0, 1, -56.7f, -90f, 9f, false);
+		GenerateHorse(0, 7, 61.56f, -90f, 9f, false);
 
 		bluePiecesPos.Add(new Vector2(0, 1));
 		bluePiecesPos.Add(new Vector2(0, 7));
@@ -802,8 +813,8 @@ public class Board : MonoBehaviour {
 		redPiecesPos.Add(new Vector2(9, 0));
 		redPiecesPos.Add(new Vector2(9, 8));
 
-		GenerateHorse(9, 1, -61.56f, 90f, 14.3f, true);
-		GenerateHorse(9, 7, 56.7f, 90f, 14.3f, true);
+		GenerateHorse(9, 1, -61.56f, 90f, 9f, true);
+		GenerateHorse(9, 7, 56.7f, 90f, 9f, true);
 
 		redPiecesPos.Add(new Vector2(9, 1));
 		redPiecesPos.Add(new Vector2(9, 7));
@@ -1762,12 +1773,12 @@ public class Board : MonoBehaviour {
 		GameObject go;
 		if(red){
 			go = Instantiate(horseRed) as GameObject;
-			go.AddComponent<HorsePiece>();
+			// go.AddComponent<HorsePiece>();
 			go.GetComponent<HorsePiece>().Type = "horse";
 			go.GetComponent<HorsePiece>().SetRed(true);
 		}else{
 			go = Instantiate(horseBlue) as GameObject;
-			go.AddComponent<HorsePiece>();
+			// go.AddComponent<HorsePiece>();
 			go.GetComponent<HorsePiece>().Type = "horse";
 			go.GetComponent<HorsePiece>().SetRed(false);
 		}

@@ -125,8 +125,12 @@ public class ChessPiece : MonoBehaviour {
 		}
 	}
 
-	public virtual void AttackAnimation(Vector3 startPosition, Vector2 start, Vector2 target){
+	public virtual void AttackAnimation(Board board, Vector3 startPosition, Vector2 start, ChessPiece targetPiece, int endX, int endY){
 		// board.RemovePiece(target.x, target.y);
+		board.RemovePieceAfterAnimation(targetPiece);
+		if(MoveAttack){
+			board.MovePieceAfterAnimation(this, endX, endY);
+		}
 		// if(selectedPiece.MoveAttack){
 		// 	board.MovePiece(selectedPiece, endX, endY);
 		// }

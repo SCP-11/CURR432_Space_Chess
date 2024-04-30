@@ -20,7 +20,9 @@ public class DebriDestroy : MonoBehaviour
     }
     public void DestroyPawn(){
         if(board != null){
-            board.RemovePiece(x, y);
+            ChessPiece target = board.pieces[x, y];
+            board.pieces[x, y] = null;
+            board.RemovePieceAfterAnimation(target);
         }
     }
     public void DestroySelf(){

@@ -100,19 +100,23 @@ public class HorsePiece : ChessPiece
 				// ChessPiece target = pieces[selfX+(red? -2: 2), selfY+1];
 				int targetX = selfX+(red? -2: 2);
 				int targetY = selfY+1;
+				ChessPiece target = pieces[targetX, targetY];
 				if(pieces[targetX, targetY] != null){
 					if(pieces[targetX, targetY].GetRed() != red){
 						d+= $"Remove {(targetX, targetY)}";	///////////	DEBUG
-						board.RemovePiece(targetX, targetY);
+						pieces[targetX, targetY] = null;
+						board.RemovePieceAfterAnimation(target);
 					}
 				}
 
 				targetX = selfX+(red? -2: 2);
 				targetY = selfY-1;
+				target = pieces[targetX, targetY];
 				if(pieces[targetX, targetY] != null){
 					if(pieces[targetX, targetY].GetRed() != red){
 						d+= $"Remove {(targetX, targetY)}";	///////////	DEBUG
-						board.RemovePiece(targetX, targetY);
+						pieces[targetX, targetY] = null;
+						board.RemovePieceAfterAnimation(target);
 					}
 				}
 				Debug.Log(d);	///////////	DEBUG
@@ -121,23 +125,61 @@ public class HorsePiece : ChessPiece
 
     }
 	
-	public override void AttackAnimation(Vector3 startPosition, Vector2 start, Vector2 target){
-		Vector3 targetPosition = startPosition + new Vector3((target.y - start.y) * 20f, (target.x - start.x) * 20f, 0.0f);
-		LaunchMissle(startPosition, targetPosition);
+	public override void AttackAnimation(Board board, Vector3 startPosition, Vector2 start, ChessPiece targetPiece, int endX, int endY){
+		int targetX = (int) targetPiece.GetBoardPosition().x;
+		int targetY = (int) targetPiece.GetBoardPosition().y;
+
+		Vector3 targetPosition = startPosition + new Vector3((targetY - start.y) * 20f, (targetX - start.x) * 20f, 0.0f);
+		StartCoroutine(LaunchMissle(board, startPosition, targetPosition, targetPiece, endX, endY));
 	}
 
-	IEnumerator LaunchMissle(Vector3 startPosition, Vector3 targetPosition){
-		GameObject missleInstance = Instantiate(missle, startPosition, UnityEngine.Quaternion.identity);
-		missleInstance.transform.LookAt(targetPosition);
-		missleInstance.transform.Rotate(90, 0, 0);
+	IEnumerator LaunchMissle(Board board, Vector3 startPosition, Vector3 targetPosition, ChessPiece targetPiece, int endX, int endY){
+		// GameObject missles = Instantiate(missle);
+		GameObject missles = new GameObject();
+		missles.transform.parent = this.transform;
+		missles.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
+		missles.transform.localRotation = UnityEngine.Quaternion.Euler(0, 0, 0);
+		
+		GameObject missleInstance1 = Instantiate(missle);
+		missleInstance1.transform.parent = missles.transform;
+		// missleInstance1.transform.parent = this.transform;
+
+		GameObject missleInstance2 = Instantiate(missle);
+		missleInstance2.transform.parent = missles.transform;
+		// missleInstance2.transform.parent = this.transform;
+
+		GameObject missleInstance3 = Instantiate(missle);
+		missleInstance3.transform.parent = missles.transform;
+		// missleInstance3.transform.parent = this.transform;
+
+		// missles.transform.LookAt(targetPosition);
+		// this.transform.LookAt(targetPosition);
+		// Vector3 direction = targetPosition - transform.position;
+		// UnityEngine.Quaternion lookRotation = UnityEngine.Quaternion.LookRotation(-direction, Vector3.forward);
+		// transform.rotation = UnityEngine.Quaternion.Euler(lookRotation.eulerAngles.x, lookRotation.eulerAngles.y, lookRotation.eulerAngles.z);
+       
+		// missles.transform.Rotate(90, 0, 0);
+		// this.transform.Rotate(0, 0, 0);
 		float time = 0;
 		float duration = 1f;
 		while(time < duration){
-			missleInstance.transform.position = Vector3.Lerp(startPosition, targetPosition, time/duration);
+			missles.transform.position = Vector3.Lerp(startPosition, targetPosition, time/duration);
+			// this.transform.position = Vector3.Lerp(startPosition, targetPosition, time/duration);
+			int count = missles.transform.childCount;
+			// int count = this.transform.childCount;
+			for(int i = 0; i < count; i++){
+				missles.transform.GetChild(i).transform.localPosition = new Vector3(10 * Mathf.Sin(2 * Mathf.PI * time/duration + i*Mathf.PI/count), 
+				0.0f,10 * Mathf.Cos(2 * Mathf.PI * time/duration + i*Mathf.PI/count));
+				// this.transform.GetChild(i).transform.localPosition = new Vector3(2 * Mathf.Sin(2 * Mathf.PI * time/duration + i*Mathf.PI/count),
+				// 0.0f,2 * Mathf.Cos(2 * Mathf.PI * time/duration + i*Mathf.PI/count));
+			}
 			time += Time.deltaTime;
 			yield return null;
 		}
-		Destroy(missleInstance);
-
+		Destroy(missles);
+		board.RemovePieceAfterAnimation(targetPiece);
+		if(MoveAttack){
+			board.MovePieceAfterAnimation(this, endX, endY);
+		}
 	}
 }
