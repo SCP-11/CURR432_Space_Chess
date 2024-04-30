@@ -5,9 +5,12 @@ using System.Collections.Generic;
 using System.IO;
 using Unity.VisualScripting;
 using System.Linq;
+using UnityEngine.UI;
+using TMPro;
 
 public class Board : MonoBehaviour {
 
+	private bool play = false;
 	public static Board Instance {set; get;}
 
 	public ChessPiece[,] pieces = new ChessPiece[10,9];
@@ -29,6 +32,7 @@ public class Board : MonoBehaviour {
 	public GameObject cannonBlue;
 	public GameObject soldierBlue;
 
+	public AudioSource moveSound;
 	public GameObject redCurvyArrow;
 	public GameObject blueCurvyArrow;
 	float arrowStep = 1;
@@ -93,6 +97,8 @@ public class Board : MonoBehaviour {
 	private Vector3 boardToWorld(Vector2 boardLoc){
 		return new Vector3(boardOrigin.x + boardLoc.y * 20f, boardOrigin.y + boardLoc.x * 20f, boardOrigin.z);
 	}
+
+	public GameObject endMenu;
 	private void Start()
 	{
 		Instance = this;
@@ -121,6 +127,9 @@ public class Board : MonoBehaviour {
 	}
 	private void Update()
 	{
+		if(!play){
+			return;
+		}
 		// UpdateMouseOver();
 
 		//boardPosition : mouse position on board
@@ -225,6 +234,11 @@ public class Board : MonoBehaviour {
 		foreach (ChessPiece piece in pieces){
 			if(piece != null){
 				Destroy(piece.gameObject);
+			}
+		}
+		foreach (GameObject debris in spaceDebrisObjects){
+			if(debris != null){
+				Destroy(debris);
 			}
 		}
 		for (int i = 0; i < 9; i++)
@@ -469,6 +483,7 @@ public class Board : MonoBehaviour {
 						RemovePiece(endX, endY);
 					}
 					MovePiece(selectedPiece, endX, endY);
+					moveSound.Play();
 					moveCompleted = true;
 					//	Update the front line
 					SwitchTurn();	//Switch turn
@@ -620,7 +635,7 @@ public class Board : MonoBehaviour {
 		moveCompleted = false;
 		return false;
 	}
-	private void MovePiece(ChessPiece piece, int x, int y){
+	public void MovePiece(ChessPiece piece, int x, int y){
 		if(piece==null){
 			return;
 		}
@@ -658,9 +673,12 @@ public class Board : MonoBehaviour {
 		}
 		piece.SetBoardPosition(x, y);
 		pieces[x, y] = piece;
+
+		//CheckSpecial
+		piece.CheckSpecial(this, pieces);
 	}
 
-	private void RemovePiece(int x, int y){
+	public void RemovePiece(int x, int y){
 		bool isRed = pieces[x, y].GetRed();
 		/////////////////////////////////////////////////Attack
 		// if(pieces[x, y]!=null){ //eat the pawn
@@ -696,12 +714,19 @@ public class Board : MonoBehaviour {
 	}
 
 	private void GameOver(bool redLose){
+			endMenu.SetActive(true);
+			StopPlay();
+			TextMeshProUGUI winnerText = endMenu.GetComponentInChildren<TextMeshProUGUI>();
+			// Text endMenu.GetText();
 			if(redLose){
 				//
 				winner = "Blue";
+				winnerText.text = "P2 Wins!";
+
 			}else{
 				//
 				winner = "Red";
+				winnerText.text = "P1 Wins!";
 			}
 	}
 
@@ -907,9 +932,11 @@ public class Board : MonoBehaviour {
 					// Destroy(Che)
 					// spaceDebris[i, j] = 0;
 					if(pieces[i, j] != null){
+						spaceDebrisObjects[i,j].GetComponent<DebriDestroy>().DestroyXY(this, i, j);
 						//Remove the piece
 						debug+=$"Remove Piece [{i}, {j}]....";
-						RemovePiece(i, j);
+						// RemovePiece(i, j);
+						
 					}
 					animator.SetTrigger("Next");
 				}
@@ -1867,6 +1894,14 @@ public class Board : MonoBehaviour {
 			to_print += $"{i}: ({pos.x}, {pos.y})	 ";
 		}
 		Debug.Log(to_print);
+	}
+
+	public void Play(){
+		play = true;
+	}
+
+	public void StopPlay(){
+		play = false;
 	}
 }
 

@@ -1,12 +1,13 @@
 ﻿using System.Collections;
+using Unity.Barracuda;
 using UnityEngine;
 
 public class ChessPiece : MonoBehaviour {
 
 	private string type;
-	private bool red;
+	protected bool red;
 	private bool atRiver;
-	private Vector2 boardPosition;
+	protected Vector2 boardPosition;
 
 	private int lockRange;
 	private bool moveAttack;
@@ -125,5 +126,15 @@ public class ChessPiece : MonoBehaviour {
 	}
 
 	public virtual void AttackAnimation(Vector3 startPosition, Vector2 start, Vector2 target){
+		// board.RemovePiece(target.x, target.y);
+		// if(selectedPiece.MoveAttack){
+		// 	board.MovePiece(selectedPiece, endX, endY);
+		// }
 	}
+
+	public virtual void CheckSpecial(Board board, ChessPiece[,] pieces){
+		
+	}
+
+	
 }

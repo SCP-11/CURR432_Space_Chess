@@ -7,7 +7,7 @@ public class RandomAngle : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        this.transform.Rotate(Random.Range(0, 30), 0, Random.Range(0, 30));
+        this.transform.Rotate(Random.Range(0, 30), Random.Range(0, 30), Random.Range(0, 30));
     }
 
     // Update is called once per frame

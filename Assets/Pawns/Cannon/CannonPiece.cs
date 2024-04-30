@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -197,4 +198,42 @@ public class CannonPiece : ChessPiece
 			}
 		}
 	}
+
+    public override void CheckSpecial(Board board, ChessPiece[,] pieces)
+    {
+        // base.CheckSpecial();
+		int selfX = (int)boardPosition.x;
+		int selfY = (int)boardPosition.y;
+		ChessPiece front = pieces[selfX+(red? -1: 1), selfY];
+		String d = $"";
+		// d += $"Checking {(selfX+(red? -1: 1), selfY)}";	///////////	DEBUG
+		// Debug.Log(d);	///////////	DEBUG
+		if(front != null){
+			if(front.Type == "horse"){
+				d = "Horse Cannon Special Attack!: ";
+				// MoveAttack = true;
+				// d += $"Checking {(selfX+1, selfY+(red? -2: 2))} and {(selfX-1, selfY+(red? -2: 2))}";	///////////	DEBUG
+
+				// ChessPiece target = pieces[selfX+(red? -2: 2), selfY+1];
+				int targetX = selfX+(red? -3: 3);
+				int targetY = selfY+1;
+				if(pieces[targetX, targetY] != null){
+					if(pieces[targetX, targetY].GetRed() != red){
+						d+= $"Remove {(targetX, targetY)}";	///////////	DEBUG
+						board.RemovePiece(targetX, targetY);
+					}
+				}
+
+				targetX = selfX+(red? -3: 3);
+				targetY = selfY-1;
+				if(pieces[targetX, targetY] != null){
+					if(pieces[targetX, targetY].GetRed() != red){
+						d+= $"Remove {(targetX, targetY)}";	///////////	DEBUG
+						board.RemovePiece(targetX, targetY);
+					}
+				}
+				Debug.Log(d);	///////////	DEBUG
+			}
+		}
+    }
 }

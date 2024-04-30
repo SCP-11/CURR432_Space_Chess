@@ -9,8 +9,10 @@ public class DestroyOnExit : StateMachineBehaviour
     //{
     //    
     //}
+    
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         Destroy(animator.gameObject, stateInfo.length);
+        // board.RemovePiece
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks

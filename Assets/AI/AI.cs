@@ -6,7 +6,7 @@ using UnityEngine;
 // using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
-using UnityEditor.ShaderGraph;
+// using UnityEditor.ShaderGraph;
 using System;
 using Unity.VisualScripting;
 public class AI : Agent
