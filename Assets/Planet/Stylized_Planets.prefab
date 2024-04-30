@@ -68,6 +68,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Stylized_Planets
       objectReference: {fileID: 0}
+    - target: {fileID: 4014616337429879781, guid: 9ea5778a51054b44fae22a0f05fe6287, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 69de4a9eae511784a93fc14bfab6dd2f, type: 2}
     - target: {fileID: 6110982367473178960, guid: 9ea5778a51054b44fae22a0f05fe6287, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
