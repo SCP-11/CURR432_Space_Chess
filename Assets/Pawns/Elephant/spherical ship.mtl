@@ -1,0 +1,252 @@
+# Blender 3.4.1 MTL File: 'None'
+# www.blender.org
+
+newmtl M_bubkeship_screens
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubkeship_screens_BaseColor.png
+map_Ns C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubkeship_screens_Roughness.png
+map_refl C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubkeship_screens_Metallic.png
+map_Ke C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubkeship_screens_Emission.png
+map_Bump -bm 1.000000 C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubkeship_screens_Normal.png
+
+newmtl M_bubleship_bottomhull
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_bottomhull_BaseColor.png
+map_Ns C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_bottomhull_Roughness.png
+map_refl C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_bottomhull_Metallic.png
+map_Bump -bm 1.000000 C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_bottomhull_Normal.png
+
+newmtl M_bubleship_cockpitpanels
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_cockpitpanels_BaseColor.png
+map_Ns C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_cockpitpanels_Roughness.png
+map_refl C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_cockpitpanels_Metallic.png
+map_Bump -bm 4.000000 C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_cockpitpanels_Normal.png
+
+newmtl M_bubleship_details
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_details_BaseColor.png
+map_Ns C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_details_Roughness.png
+map_refl C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_details_Metallic.png
+map_Bump -bm 4.000000 C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_details_Normal.png
+
+newmtl M_bubleship_engines
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_engines_BaseColor.png
+map_Ns C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_engines_Roughness.png
+map_refl C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_engines_Metallic.png
+map_Bump -bm 1.000000 C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_engines_Normal.png
+
+newmtl M_bubleship_glass
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_glass_BaseColor.png
+map_Ns C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_glass_Roughness.png
+map_refl C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_glass_Metallic.png
+map_Bump -bm 1.000000 C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_glass_Normal.png
+
+newmtl M_bubleship_interior.door
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_interior.door_BaseColor.png
+map_Ns C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_interior.door_Roughness.png
+map_refl C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_interior.door_Metallic.png
+map_Bump -bm 1.000000 C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_interior.door_Normal.png
+
+newmtl M_bubleship_mainhull
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_mainhull_BaseColor.png
+map_Ns C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_mainhull_Roughness.png
+map_refl C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_mainhull_Metallic.png
+map_Bump -bm 1.000000 C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_mainhull_Normal.png
+
+newmtl M_bubleship_mainhull2
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_mainhull2_BaseColor.png
+map_Ns C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_mainhull2_Roughness.png
+map_refl C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_mainhull2_Metallic.png
+map_Bump -bm 1.000000 C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_mainhull2_Normal.png
+
+newmtl M_bubleship_mainhull3
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_mainhull3_BaseColor.png
+map_Ns C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_mainhull3_Roughness.png
+map_refl C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_mainhull3_Metallic.png
+map_Bump -bm 1.000000 C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_mainhull3_Normal.png
+
+newmtl M_bubleship_mainhull4
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_mainhull4_BaseColor.png
+map_Ns C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_mainhull4_Roughness.png
+map_refl C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_mainhull4_Metallic.png
+map_Bump -bm 1.000000 C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_mainhull4_Normal.png
+
+newmtl M_bubleship_mainhull5
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_mainhull5_BaseColor.png
+map_Ns C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_mainhull5_Roughness.png
+map_refl C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_mainhull5_Metallic.png
+map_Bump -bm 1.000000 C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_mainhull5_Normal.png
+
+newmtl M_bubleship_mainhullhidden
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/Drago/Downloads/spherical-ship/source/textures/1K/M_bubleship_mainhullhidden_BaseColor.png
+
+newmtl M_bubleship_misc
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_misc_BaseColor.png
+map_Ns C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_misc_Roughness.png
+map_refl C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_misc_Metallic.png
+map_Bump -bm 1.000000 C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_misc_Normal.png
+
+newmtl M_bubleship_reardoor
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_reardoor_BaseColor.png
+map_Ns C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_reardoor_Roughness.png
+map_refl C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_reardoor_Metallic.png
+map_Bump -bm 1.000000 C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_reardoor_Normal.png
+
+newmtl M_bubleship_rearpanel
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_rearpanel_BaseColor.png
+map_Ns C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_rearpanel_Roughness.png
+map_refl C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_rearpanel_Metallic.png
+map_Bump -bm 1.000000 C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_rearpanel_Normal.png
+
+newmtl M_bubleship_seat
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_seat_BaseColor.png
+map_Ns C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_seat_Roughness.png
+map_refl C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_seat_Metallic.png
+map_Bump -bm 1.000000 C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_seat_Normal.png
+
+newmtl M_bubleship_sidepanels
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_sidepanels_BaseColor.png
+map_Ns C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_sidepanels_Roughness.png
+map_refl C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_sidepanels_Metallic.png
+map_Bump -bm 1.000000 C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_sidepanels_Normal.png
+
+newmtl M_bubleship_tophullcenter
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_tophullcenter_BaseColor.png
+map_Ns C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_tophullcenter_Roughness.png
+map_refl C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_tophullcenter_Metallic.png
+map_Bump -bm 1.000000 C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_tophullcenter_Normal.png
+
+newmtl M_bubleship_tophullcenter.001
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_tophullcenter.001_BaseColor.png
+map_Ns C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_tophullcenter.001_Roughness.png
+map_refl C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_tophullcenter.001_Metallic.png
+map_Bump -bm 1.000000 C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_tophullcenter.001_Normal.png
+
+newmtl M_bubleship_tophullrear
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_tophullrear_BaseColor.png
+map_Ns C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_tophullrear_Roughness.png
+map_refl C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_tophullrear_Metallic.png
+map_Bump -bm 1.000000 C:/Users/Drago/Downloads/spherical-ship/source/textures/8K/M_bubleship_tophullrear_Normal.png

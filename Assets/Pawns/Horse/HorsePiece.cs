@@ -92,7 +92,7 @@ public class HorsePiece : ChessPiece
 		// d += $"Checking {(selfX+(red? -1: 1), selfY)}";	///////////	DEBUG
 		// Debug.Log(d);	///////////	DEBUG
 		if(front != null){
-			if(front.Type == "cannon"){
+			if(front.Type == "cannon"&&front.GetRed()==GetRed()){
 				d = "Horse Cannon Special Attack!: ";
 				// MoveAttack = true;
 				// d += $"Checking {(selfX+1, selfY+(red? -2: 2))} and {(selfX-1, selfY+(red? -2: 2))}";	///////////	DEBUG
@@ -167,9 +167,10 @@ public class HorsePiece : ChessPiece
 			// this.transform.position = Vector3.Lerp(startPosition, targetPosition, time/duration);
 			int count = missles.transform.childCount;
 			// int count = this.transform.childCount;
+			missles.transform.LookAt(targetPosition);
 			for(int i = 0; i < count; i++){
-				missles.transform.GetChild(i).transform.localPosition = new Vector3(10 * Mathf.Sin(2 * Mathf.PI * time/duration + i*Mathf.PI/count), 
-				0.0f,10 * Mathf.Cos(2 * Mathf.PI * time/duration + i*Mathf.PI/count));
+				missles.transform.GetChild(i).transform.localPosition = new Vector3( 
+				10 * Mathf.Sin(Mathf.PI * time/duration + i*Mathf.PI/count),10 * Mathf.Cos(Mathf.PI * time/duration + i*Mathf.PI/count), 0);
 				// this.transform.GetChild(i).transform.localPosition = new Vector3(2 * Mathf.Sin(2 * Mathf.PI * time/duration + i*Mathf.PI/count),
 				// 0.0f,2 * Mathf.Cos(2 * Mathf.PI * time/duration + i*Mathf.PI/count));
 			}
@@ -182,4 +183,14 @@ public class HorsePiece : ChessPiece
 			board.MovePieceAfterAnimation(this, endX, endY);
 		}
 	}
+
+    public override string GetInfo()
+    {
+        String info = "Missle ship: \n";
+		info += "It can move 2 vertical steps and 1 horizontal step in any direction.\n";
+		info += "Attack is the same as move.\n";
+		info += "Special Attack: attack when cannon is behind.\n";
+
+		return info;
+    }
 }

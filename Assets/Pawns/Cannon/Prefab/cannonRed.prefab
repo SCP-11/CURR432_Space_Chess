@@ -46,6 +46,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb2835d7832591e49896ac92a85c65c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  shield: {fileID: 0}
+  hasShield: 0
   beamParticleEffect: {fileID: 8996453232602650908, guid: 647425d9bff437f4b88b6bf353f5e4dd, type: 3}
 --- !u!1 &4400333390723301288
 GameObject:
@@ -170,7 +172,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2110947604738805089
 Transform:
   m_ObjectHideFlags: 0

@@ -99,6 +99,7 @@ public class Board : MonoBehaviour {
 	}
 
 	public GameObject endMenu;
+	public GameObject infoMenu;
 	private void Start()
 	{
 		Instance = this;
@@ -129,7 +130,7 @@ public class Board : MonoBehaviour {
 	{
 		String d = "";
 		d += $"Red: {redPiecesCount} Blue: {bluePiecesCount}\n";
-		Debug.Log(d);
+		// Debug.Log(d);
 		if(!play){
 			return;
 		}
@@ -312,6 +313,10 @@ public class Board : MonoBehaviour {
 
 				/////////////// 	ADDED	/////////////
 				// dragging = true;
+				infoMenu.SetActive(true);
+				TextMeshProUGUI infoText = infoMenu.GetComponentInChildren<TextMeshProUGUI>();
+				infoText.text = p.GetInfo();
+
 				originalPosition = selectedPiece.transform.position;
 				int startX = (int) startDrag.x;
 				int startY = (int) startDrag.y;
@@ -363,6 +368,7 @@ public class Board : MonoBehaviour {
 					}
 
 				}
+				infoMenu.SetActive(false);
 				selectedPiece = null;
 			}
 		}
@@ -535,15 +541,21 @@ public class Board : MonoBehaviour {
 				if(pieces[endX, endY]!=null){ //eat the pawn
 					//TODO: call attack function of each pawnPiece class for animation and effects.
 					ChessPiece target = pieces[endX, endY];
-					RemovePieceBeforeAnimation(endX, endY);
-					if(selectedPiece.MoveAttack){
-						MovePieceBeforeAnimation(selectedPiece, endX, endY);
+					// if(target.Type == "soldier")
+					if(target.hasShield){
+						target.hasShield = false;
+					}else{
+						RemovePieceBeforeAnimation(endX, endY);
+						if(selectedPiece.MoveAttack){
+							MovePieceBeforeAnimation(selectedPiece, endX, endY);
+						}// RemovePieceAfterAnimation(target);
+						// if(selectedPiece.MoveAttack){
+						// 	MovePieceAfterAnimation(selectedPiece, endX, endY);
+						// }
+						selectedPiece.AttackAnimation(this, selectedPiece.transform.position, new Vector2(startX,startY), target, endX, endY);
+					
 					}
-					selectedPiece.AttackAnimation(this, selectedPiece.transform.position, new Vector2(startX,startY), target, endX, endY);
-					// RemovePieceAfterAnimation(target);
-					// if(selectedPiece.MoveAttack){
-					// 	MovePieceAfterAnimation(selectedPiece, endX, endY);
-					// }
+					
 					SwitchTurn();
 					return true;
 				}
@@ -564,6 +576,7 @@ public class Board : MonoBehaviour {
 		moveCompleted = false;
 		return false;
 	}
+
 	public void MovePiece(ChessPiece piece, int x, int y){
 		if(piece==null){
 			return;
@@ -764,8 +777,8 @@ public class Board : MonoBehaviour {
 		bluePiecesPos.Add(new Vector2(0, 0));
 		bluePiecesPos.Add(new Vector2(0, 8));
 
-		GenerateHorse(0, 1, -56.7f, -90f, 9f, false);
-		GenerateHorse(0, 7, 61.56f, -90f, 9f, false);
+		GenerateHorse(0, 1, -60f, -90f, 9f, false);
+		GenerateHorse(0, 7, 60f, -90f, 9f, false);
 
 		bluePiecesPos.Add(new Vector2(0, 1));
 		bluePiecesPos.Add(new Vector2(0, 7));
@@ -813,8 +826,8 @@ public class Board : MonoBehaviour {
 		redPiecesPos.Add(new Vector2(9, 0));
 		redPiecesPos.Add(new Vector2(9, 8));
 
-		GenerateHorse(9, 1, -61.56f, 90f, 9f, true);
-		GenerateHorse(9, 7, 56.7f, 90f, 9f, true);
+		GenerateHorse(9, 1, -60f, 90f, 9f, true);
+		GenerateHorse(9, 7, 60f, 90f, 9f, true);
 
 		redPiecesPos.Add(new Vector2(9, 1));
 		redPiecesPos.Add(new Vector2(9, 7));
@@ -893,6 +906,9 @@ public class Board : MonoBehaviour {
 	}
 
 	private void SwitchTurn(){
+		String d = "";
+		d += "Switch Turn... ";
+		d += $"Turn is now {(isRedTurn? "Red": "Blue")}";
 		isRedTurn = !isRedTurn;
 		UpdateFrontLines();
 		UpdateSpaceDebris();
@@ -1222,18 +1238,20 @@ public class Board : MonoBehaviour {
 		}else if(type=="cannon"){
 			possibleMoves = moving_piece.GetPossibleMoves(pieces, startX, startY);
 		}else if(type=="soldier"){
-			bool crossedRiver = false;
-			if(isRed){
-				checkAndAddMove(possibleMoves, new Vector2(startX-1, startY));
-				if(startX<=4){crossedRiver=true;}
-			}else{
-				checkAndAddMove(possibleMoves, new Vector2(startX+1, startY));
-				if(startX>=5){crossedRiver=true;}
-			}
-			if(crossedRiver){
-				checkAndAddMove(possibleMoves, new Vector2(startX, startY-1));
-				checkAndAddMove(possibleMoves, new Vector2(startX, startY+1));
-			}
+			possibleMoves = moving_piece.GetPossibleMoves(pieces, startX, startY);
+		
+			// bool crossedRiver = false;
+			// if(isRed){
+			// 	checkAndAddMove(possibleMoves, new Vector2(startX-1, startY));
+			// 	if(startX<=4){crossedRiver=true;}
+			// }else{
+			// 	checkAndAddMove(possibleMoves, new Vector2(startX+1, startY));
+			// 	if(startX>=5){crossedRiver=true;}
+			// }
+			// if(crossedRiver){
+			// 	checkAndAddMove(possibleMoves, new Vector2(startX, startY-1));
+			// 	checkAndAddMove(possibleMoves, new Vector2(startX, startY+1));
+			// }
 		}
 
 		for (int i = possibleMoves.Count - 1; i >= 0; i--){

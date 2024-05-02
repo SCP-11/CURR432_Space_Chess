@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using Unity.Barracuda;
 using UnityEngine;
 
@@ -11,6 +12,8 @@ public class ChessPiece : MonoBehaviour {
 
 	private int lockRange;
 	private bool moveAttack;
+    public GameObject shield;
+    public bool hasShield = false;
 	public ChessPiece(string t, bool r, int x, int y){
 		type = t;
 		red = r;
@@ -140,5 +143,15 @@ public class ChessPiece : MonoBehaviour {
 		
 	}
 
-	
+	protected void UpdateShield(){
+		if(hasShield){
+			shield.SetActive(true);
+		}else{
+			shield.SetActive(false);
+		}
+	}
+
+	public virtual String GetInfo(){
+		return "";
+	}
 }

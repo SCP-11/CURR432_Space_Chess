@@ -33,3 +33,5 @@
 
 # Ignore LFS folder
 /Assets/LFS
+
+/Builds

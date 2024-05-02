@@ -215,7 +215,7 @@ public class CannonPiece : ChessPiece
 		// d += $"Checking {(selfX+(red? -1: 1), selfY)}";	///////////	DEBUG
 		// Debug.Log(d);	///////////	DEBUG
 		if(front != null){
-			if(front.Type == "horse"){
+			if(front.Type == "horse"&&front.GetRed()==GetRed()){
 				d = "Horse Cannon Special Attack!: ";
 				// MoveAttack = true;
 				// d += $"Checking {(selfX+1, selfY+(red? -2: 2))} and {(selfX-1, selfY+(red? -2: 2))}";	///////////	DEBUG
@@ -243,8 +243,34 @@ public class CannonPiece : ChessPiece
 						board.RemovePieceAfterAnimation(target);
 					}
 				}
-				Debug.Log(d);	///////////	DEBUG
+			}else if(front.Type == "soldier"){
+				// String d = $"";
+				if(front!=null && front.GetRed()==GetRed()){
+					if(front.Type == "soldier"){
+						d = $"Cannon gave soldier sheidl!";
+						front.hasShield = true;
+						// front.shield.SetActive(true);
+					}
+				}
 			}
 		}
+		ChessPiece front2 = pieces[selfX+(red? -2: 2), selfY];
+		if(front2!=null && front2.GetRed()==GetRed()){
+			if(front2.Type == "soldier"){
+				d = $"Cannon gave soldier sheidl!";
+				front2.hasShield = true;
+				// shield.SetActive(true);
+			}
+		}
+		Debug.Log(d);	///////////	DEBUG
     }
+
+	public override String GetInfo(){
+		String info = "";
+		info += "Cannon\n";
+		info += "Can move to any position vertically or horizontally\n";
+		info += "Can only attack through one piece\n";
+		// info += "Special: If a horse is in front, can attack 2 spaces away\n";
+		return info;
+	}
 }
